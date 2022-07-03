@@ -1,0 +1,10 @@
+copy /include/#? sdk:Include/include_h/ all
+
+IF EXISTS powerpacker.library
+copy powerpacker.library libs:
+avail flush
+else
+echo powerpacker.library not found
+endif
+
+

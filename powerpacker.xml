@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE library SYSTEM "library.dtd">
+<library name="powerpacker" basename="PowerPackerBase" openname="powerpacker.library">
+	<include>exec/types.h</include>
+	<include>libraries/powerpacker.h</include>
+	<interface name="main" version="1.0" struct="PowerPackerIFace" prefix="_powerpacker_" asmprefix="IPowerPacker" global="IPowerPacker">
+		<method name="Obtain" result="ULONG"/>
+		<method name="Release" result="ULONG"/>
+		<method name="Expunge" result="void" status="unimplemented"/>
+		<method name="Clone" result="struct Interface *" status="unimplemented"/>
+		<method name="ppLoadData" result="ULONG">
+			<arg name="filename" type="char *"/>
+			<arg name="col" type="ULONG"/>
+			<arg name="memtype" type="ULONG"/>
+			<arg name="bufferptr" type="UBYTE **"/> 
+			<arg name="lenptr" type="ULONG *"/>
+			<arg name="funcptr" type="BOOL (*)()"/>
+		</method>
+		<method name="ppDecrunchBuffer" result="void">
+			<arg name="endcrun" type="UBYTE *"/>
+			<arg name="decrbuff" type="UBYTE *"/>
+			<arg name="effptr" type="ULONG *"/>
+			<arg name="col" type="ULONG"/> 
+		</method>
+		<method name="ppCalcChecksum" result="ULONG">
+			<arg name="string" type="char *"/>
+		</method>
+		<method name="ppCalcPasskey" result="ULONG">
+			<arg name="string" type="char *"/>
+		</method>
+		<method name="ppDecrypt" result="void">
+			<arg name="buffer" type="UBYTE *"/>
+			<arg name="len" type="ULONG *"/>
+			<arg name="key" type="ULONG"/> 
+		</method>
+		<method name="ppGetPassword" result="BOOL">
+			<arg name="screen" type="struct Screen *"/>
+			<arg name="buffer" type="ULONG *"/>
+			<arg name="maxchars" type="ULONG"/> 
+			<arg name="checksum" type="ULONG"/> 
+		</method>
+		<method name="ppAllocCrunchInfo" result="APTR">
+			<arg name="eff" type="ULONG"/>
+			<arg name="speedup" type="ULONG"/>
+			<arg name="func" type="BOOL (*)()"/> 
+			<arg name="userdata" type="APTR"/> 
+		</method>
+		<method name="ppFreeCrunchInfo" result="void">
+			<arg name="crunchinfo" type="APTR"/>
+		</method>
+		<method name="ppCrunchBuffer" result="ULONG">
+			<arg name="crunchinfo" type="APTR"/>
+			<arg name="buffer" type="UBYTE *"/>
+			<arg name="length" type="ULONG"/> 
+		</method>
+		<method name="ppWriteDataHeader" result="BOOL">
+			<arg name="lock" type="BPTR"/>
+			<arg name="eff" type="ULONG"/>
+			<arg name="crypt" type="BOOL"/> 
+			<arg name="checksum" type="ULONG"/> 
+		</method>
+		<method name="ppEnterPassword" result="BOOL">
+			<arg name="screen" type="struct Screen *"/>
+			<arg name="buffer" type="UBYTE *"/>
+		</method>
+		<method name="ppErrorMessage" result="char *">
+			<arg name="error" type="ULONG"/>
+		</method>
+		<method name="ppCrunchBufferDest" result="ULONG">
+			<arg name="crunchinfo" type="UBYTE *"/>
+			<arg name="buffer" type="UBYTE *"/>
+			<arg name="dest" type="UBYTE *"/> 
+			<arg name="len" type="ULONG"/> 
+		</method>
+	</interface>
+</library>
+

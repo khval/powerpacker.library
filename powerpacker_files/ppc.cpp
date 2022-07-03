@@ -1,3 +1,4 @@
+
 size_t write_word(FILE* f, unsigned short v) {
     return fwrite(&v, 1, sizeof(v), f);
 }

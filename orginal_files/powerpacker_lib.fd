@@ -1,0 +1,48 @@
+*
+*   powerpacker_lib.fd   © 1991-1993 Nico François
+*
+*   Release 1.6  Library Version 36
+*
+##base _PPBase
+##bias 30
+##public
+ppLoadData(filename,col,memtype,bufferptr,lenptr,funcptr)(A0,D0/D1,A1/A2/A3)
+ppDecrunchBuffer(endcrun,decrbuff,effptr,col)(A0/A1/A2,D0)
+ppCalcChecksum(string)(A0)
+ppCalcPasskey(string)(A0)
+ppDecrypt(buffer,len,key)(A0,D0/D1)
+ppGetPassword(screen,buffer,maxchars,checksum)(A0/A1,D0/D1)
+##private
+OBSOLETEppGetString(screen,buffer,maxchars,title)(A0/A1,D0,A2)
+OBSOLETEppGetLong(screen,longptr,title)(A0/A1/A2)
+##public
+*
+* The following three private functions are for use in the decrunch
+* header of crunched executables. Don't use them! They are
+* guaranteed to crash if not used properly!
+*
+##private
+ppDecrHdr(firstseg,effptr,decrcol,crunlen)(A4/A2,D0/D1)
+ppCryptDecrHdr(firstseg,effptr,decrcol,crunlen,checksum)(A4/A2,D0/D1/D2)
+ppOverlayDecrHdr(firstseg,effptr,decrcol,crunlen)(A4/A2,D0/D1)
+##public
+*
+* --- functions in V35 or higher (distributed as Release 1.5) ---
+*
+* Functions to crunch
+*
+ppAllocCrunchInfo(eff,speedup,func,userdata)(D0/D1,A0/A1)
+ppFreeCrunchInfo(crunchinfo)(A0)
+ppCrunchBuffer(crunchinfo,buffer,len)(A0/A1,D0)
+ppWriteDataHeader(lock,eff,crypt,checksum)(D0/D1/D2/D3)
+*
+ppEnterPassword(screen,buffer)(A0/A1)
+##private
+ppPasswordCallback()()
+##public
+ppErrorMessage(error)(D0)
+*
+* --- functions in V36 or higher (distributed as Release 1.6) ---
+*
+ppCrunchBufferDest(crunchinfo,buffer,dest,len)(A0/A1/A2,D0)
+##end
