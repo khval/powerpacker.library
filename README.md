@@ -1,4 +1,4 @@
-# powerpacker_src
+# powerpacker.library (Project resurrection)
 
 ```
 POWER-PACKER 36.10 (28.9.93) Data Cruncher.
