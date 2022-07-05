@@ -8,6 +8,8 @@
 
 #include <proto/dos.h>
 
+#include "common.h"
+
 const char PX20[] = "PX20";
 const char PP20[] = "PP20";
 const char PPMM[] = "PPMM";
@@ -440,7 +442,8 @@ static int ppCrunchBuffer_sub(progress_cb cb, CrunchInfo* info)
 	return (int)(info->dst - info->start + last_size * sizeof(unsigned int) + sizeof(unsigned int));
 }
 
-static void print_progress(unsigned int src_off, unsigned int dst_off, unsigned int fsize) {
+static void print_progress(unsigned int src_off, unsigned int dst_off, unsigned int fsize)
+{
 	if (src_off == 0) {
 		return;
 	}
@@ -645,10 +648,10 @@ typedef struct {
 } decrunch_t;
 
 BOOL ppWriteDataHeader(
-       BPTR lock,
-       ULONG eff,
-       BOOL crypt,
-       ULONG checksum)
+	   BPTR lock,
+	   ULONG eff,
+	   BOOL crypt,
+	   ULONG checksum)
 {
 	int error = 0;
 
@@ -657,7 +660,7 @@ BOOL ppWriteDataHeader(
 			error = 1;
 		}
 
-		if (!error && amiga_write_word( lock, checksum) != sizeof(checksum)) {
+		if (!error && write_word( lock, checksum) != sizeof(checksum)) {
 			error = 1;
 		}
 	}
@@ -667,7 +670,7 @@ BOOL ppWriteDataHeader(
 		}
 	}
 
-#warning "Don't know where data is comming from, did come as argument in original..."
+#warning "ppWriteDataHeader: Don't know where data is comming from, did NOT come as argument in original..."
 
 /*
 	if (!error && FWrite( lock, table, 4, 1) != 1) {
@@ -682,16 +685,136 @@ const char *error_messages[]=
 
 const char *ppErrorMessage (ULONG errorcode)
 {
+#warning "ppErrorMessage: its possible error_messages array is too small..."
+
 	return error_messages[errorcode];
 }
 
 BOOL ppEnterPassword( struct Screen * screen, UBYTE * buffer)
 {
+#warning "ppEnterPassword: is not implemented"
+
 	return FALSE;
 }
 
 BOOL ppGetPassword( struct Screen * screen, ULONG * buffer, ULONG maxchars, ULONG checksum)
 {
+
+#warning "ppGetPassword: is not implemented"
 	return FALSE;
 }
 
+int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, ULONG * lenptr, BOOL (*funcptr)()) 
+{
+	char *passwd = NULL;
+	*bufferptr = NULL;
+
+#warning "ppLoadData: col and funcptr arguments are not used"
+
+
+	BPTR f = FOpen(filename, MODE_OLDFILE, 0);
+
+	if (f == (BPTR) NULL) {
+		return -1;
+	}
+
+	ChangeFilePosition(f, 0, OFFSET_END);
+	int64 buf_len = (int64) GetFilePosition(f);
+	ChangeFilePosition(f, 0, OFFSET_BEGINNING);
+
+	if (buf_len == 0)
+	{
+		FClose(f);
+		return -1;
+	}
+
+	char tag[4];
+
+	if (FRead(f, tag, 1, sizeof(tag)) != sizeof(tag))
+	{
+		FClose(f);
+		return -1;
+	}
+	
+	unsigned int dest_len = 0;
+	unsigned int read_len = 0;
+	int offset = 4;
+	unsigned short checksum = 0;
+
+	if (!memcmp(PP20, tag, sizeof(tag))) {
+		ChangeFilePosition(f, -4, OFFSET_END);
+
+		dest_len = read_dword(f);
+
+		read_len = buf_len - offset + sizeof(decrunch_t);
+		dest_len = (dest_len >> 8);
+	}
+	else if (!memcmp(PX20, tag, sizeof(tag))) {
+		checksum = read_word(f);
+		offset += 2;
+
+		ChangeFilePosition(f, -4, OFFSET_END);
+
+		dest_len = read_dword(f);
+
+		read_len = buf_len - offset + sizeof(decrunch_t);
+		dest_len = (dest_len >> 8);
+	}
+	else {
+		FClose(f);
+		return -1;
+	}
+
+	unsigned char* buffer = (unsigned char*)malloc(read_len);
+	memset(buffer, 0, read_len);
+
+	if (buffer == NULL) {
+		FClose(f);
+		return -1;
+	}
+
+	ChangeFilePosition(f, offset, OFFSET_BEGINNING);
+
+	if (FRead(f,&buffer[sizeof(decrunch_t)], 1, read_len - sizeof(decrunch_t)) != read_len - sizeof(decrunch_t))
+	{
+		FClose(f);
+		free(buffer);
+		return -1;
+	}
+
+	FClose(f);
+
+	decrunch_t* info = (decrunch_t*)buffer;
+	*bufferptr = info;
+	info->src = &buffer[sizeof(decrunch_t)];
+
+	if (offset == 6)
+	{
+		if ((passwd == NULL) || (strlen(passwd) > 16))
+		{
+			FClose(f);
+			free(buffer);
+			return -1;
+		}
+
+		if (ppCalcChecksum(passwd) != checksum)
+		{
+			FClose(f);
+			free(buffer);
+			return -1;
+		}
+
+		unsigned int key = ppCalcPasskey(passwd);
+		ppDecrypt(&info->src[4], read_len - sizeof(decrunch_t) - 8, key);
+	}
+
+	memcpy(&info->tag, PPMM, sizeof(PPMM));
+	info->src_len = read_len - sizeof(decrunch_t);
+	info->dst_len = dest_len;
+
+	info->dst = (unsigned char*)malloc(dest_len);
+
+	if (info->dst == NULL) return -1;
+
+	return ppDecrunchBuffer(info->src, read_len - sizeof(decrunch_t) - 8, info->dst, dest_len);
+}

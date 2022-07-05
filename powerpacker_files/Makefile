@@ -38,7 +38,8 @@ main_SRCS = main/Obtain.c main/Release.c main/ppLoadData.c \
     main/ppDecrypt.c main/ppGetPassword.c main/ppAllocCrunchInfo.c \
     main/ppFreeCrunchInfo.c main/ppCrunchBuffer.c main/ppCrunchBufferDest.c \
     main/ppWriteDataHeader.c main/ppEnterPassword.c main/ppErrorMessage.c \
-	packer.c
+	packer.c \
+	ppc.c
 
 # -------------------------------------------------------------
 # Nothing should need changing below this line
