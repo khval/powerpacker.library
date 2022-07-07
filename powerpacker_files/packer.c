@@ -2,11 +2,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <limits.h>
 
 #define __USE_INLINE__
 
 #include <proto/dos.h>
+#include <proto/exec.h>
+#include <exec/emulation.h>
 
 #include "common.h"
 
@@ -94,6 +97,8 @@ typedef struct {
 	unsigned short wnd_max;
 	unsigned short wnd_off;
 	unsigned short wnd_left;
+
+	BOOL (*func)(ULONG,ULONG,APTR);
 } CrunchInfo;
 
 
@@ -476,38 +481,48 @@ void ppFreeCrunchInfo(CrunchInfo* info)
 	free(info);
 }
 
-CrunchInfo* ppAllocCrunchInfo(int eff, int old_version)
+void __get_eff_param(ULONG efficiency, unsigned char *eff_param1, unsigned char *eff_param2, unsigned char *eff_param3 )
 {
+	*eff_param3 = 10;
+	*eff_param2 = 11;
+	*eff_param1 = 11;
+
+	switch (efficiency) {
+	case 1:
+		*eff_param2 = 9;
+		*eff_param1 = 9;
+		*eff_param3 = 9;
+		break;
+	case 2:
+		*eff_param2 = 10;
+		*eff_param1 = 10;
+	case 3:
+		break;
+	case 4:
+		*eff_param2 = 12;
+		*eff_param1 = 12;
+		break;
+	case 5:
+		*eff_param1 = 12;
+		*eff_param2 = 13;
+		break;
+	}
+}
+
+CrunchInfo* ppAllocCrunchInfo( ULONG efficiency, ULONG speedup, BOOL (*func)(ULONG,ULONG,APTR), APTR userdata)
+{
+	int old_version = 0;
+	unsigned char eff_param1,eff_param2,eff_param3;
+
 	CrunchInfo* info = (CrunchInfo*)malloc(sizeof(CrunchInfo));
 
 	if (info == NULL) {
 		return NULL;
 	}
 
-	unsigned char eff_param3 = 10;
-	unsigned char eff_param2 = 11;
-	unsigned char eff_param1 = 11;
+	__get_eff_param( efficiency, &eff_param1, &eff_param2, &eff_param3 );
 
-	switch (eff) {
-	case 1:
-		eff_param2 = 9;
-		eff_param1 = 9;
-		eff_param3 = 9;
-		break;
-	case 2:
-		eff_param2 = 10;
-		eff_param1 = 10;
-	case 3:
-		break;
-	case 4:
-		eff_param2 = 12;
-		eff_param1 = 12;
-		break;
-	case 5:
-		eff_param1 = 12;
-		eff_param2 = 13;
-		break;
-	}
+	info -> func = func;
 
 	info->w00[0] = info->b2C[0] = 9;
 	info->w00[1] = info->b2C[1] = eff_param3;
@@ -649,11 +664,13 @@ typedef struct {
 
 BOOL ppWriteDataHeader(
 	   BPTR lock,
-	   ULONG eff,
+	   ULONG efficiency,
 	   BOOL crypt,
 	   ULONG checksum)
 {
 	int error = 0;
+	unsigned char eff_param1,eff_param2,eff_param3;
+	char b2C[4];
 
 	if (crypt) {
 		if (FWrite(lock, PX20, sizeof(PX20) - 1 ,1) != sizeof(PX20) - 1 ) {
@@ -670,12 +687,16 @@ BOOL ppWriteDataHeader(
 		}
 	}
 
-#warning "ppWriteDataHeader: Don't know where data is comming from, did NOT come as argument in original..."
+	__get_eff_param( efficiency, &eff_param1, &eff_param2, &eff_param3 );
 
-/*
-	if (!error && FWrite( lock, table, 4, 1) != 1) {
+	b2C[0] = 9;
+	b2C[1] = eff_param3;
+	b2C[2] = eff_param1;
+	b2C[3] = eff_param2;
+
+	if (!error && FWrite( lock, b2C, 4, 1) != 1) {
 		error = 1;
-	}*/
+	}
 
 	return error;
 }
@@ -704,13 +725,10 @@ BOOL ppGetPassword( struct Screen * screen, ULONG * buffer, ULONG maxchars, ULON
 	return FALSE;
 }
 
-int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, ULONG * lenptr, BOOL (*funcptr)()) 
+int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, ULONG * lenptr, BOOL (*password_func)(UBYTE *, ULONG)) 
 {
 	char *passwd = NULL;
 	*bufferptr = NULL;
-
-#warning "ppLoadData: col and funcptr arguments are not used"
-
 
 	BPTR f = FOpen(filename, MODE_OLDFILE, 0);
 
@@ -790,6 +808,8 @@ int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, 
 
 	if (offset == 6)
 	{
+		bool password_pass = false;
+
 		if ((passwd == NULL) || (strlen(passwd) > 16))
 		{
 			FClose(f);
@@ -797,7 +817,23 @@ int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, 
 			return -1;
 		}
 
-		if (ppCalcChecksum(passwd) != checksum)
+		if (password_func)
+		{
+			if (IsNative(password_func))
+			{
+				password_pass = password_func(passwd,checksum);
+			}
+			else
+			{
+				password_pass = EmulateTags( password_func,
+							ET_RegisterA0, passwd,
+							ET_RegisterD0, checksum,
+							TAG_END);
+			}
+		}
+		else password_pass = (ppCalcChecksum(passwd) == checksum);
+
+		if (password_pass == false)
 		{
 			FClose(f);
 			free(buffer);
@@ -805,6 +841,7 @@ int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, 
 		}
 
 		unsigned int key = ppCalcPasskey(passwd);
+
 		ppDecrypt(&info->src[4], read_len - sizeof(decrunch_t) - 8, key);
 	}
 
@@ -812,9 +849,10 @@ int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, 
 	info->src_len = read_len - sizeof(decrunch_t);
 	info->dst_len = dest_len;
 
-	info->dst = (unsigned char*)malloc(dest_len);
+	info->dst = (unsigned char*) AllocMem(dest_len, memtype);
 
 	if (info->dst == NULL) return -1;
 
 	return ppDecrunchBuffer(info->src, read_len - sizeof(decrunch_t) - 8, info->dst, dest_len);
 }
+
