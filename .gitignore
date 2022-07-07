@@ -350,3 +350,5 @@ MigrationBackup/
 .ionide/
 
 *.o
+
+powerpacker_files/powerpacker.library
