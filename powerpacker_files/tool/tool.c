@@ -1,4 +1,10 @@
 
+#define __USE_INLINE__
+
+#include <proto/dos.h>
+#include <proto/exec,h>
+#include <proto/powerpacker.h>
+
 extern size_t write_word(FILE* f, unsigned short v);
 extern size_t write_dwords(FILE* f, unsigned int* buf, int count);
 extern unsigned short read_word(FILE* f);
@@ -79,7 +85,7 @@ static int compress(const char* src_path, const char* dst_path, unsigned int fsi
     printf("  Normal length   : %d bytes.\n", fsize);
     printf("  Crunched length : %d bytes. (Gained %d%%)\n", crunched_len, (100 - (crunched_len * 100) / fsize));
 
-    FILE* dst_h = fopen(dst_path, "wb");
+    BPTR dst_h = FOpen(dst_path, o_newfile );
 
     if (dst_h == NULL) {
         printf("Can't open '%s' file!\n", dst_path);
@@ -87,7 +93,7 @@ static int compress(const char* src_path, const char* dst_path, unsigned int fsi
         return -1;
     }
 
-    int error = ppWriteDataHeader(eff, passwd != NULL, checksum, info->b2C, dst_h);
+    int error = ppWriteDataHeader(dst_h, eff, passwd != NULL, checksum, info->b2C );
 
     if (error) {
         printf("Error writing to '%s'!\n", dst_path);
@@ -100,7 +106,7 @@ static int compress(const char* src_path, const char* dst_path, unsigned int fsi
         error = 1;
     }
 
-    fclose(dst_h);
+    FClose(dst_h);
     free(info->start);
 
     if (error) {
