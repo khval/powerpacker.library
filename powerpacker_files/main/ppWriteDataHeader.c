@@ -55,10 +55,7 @@
 */
 
 BOOL _powerpacker_ppWriteDataHeader(struct PowerPackerIFace *Self,
-       BPTR lock,
-       ULONG eff,
-       BOOL crypt,
-       ULONG checksum)
+       BPTR lock, ULONG eff, BOOL crypt, ULONG checksum)
 {
   return ppWriteDataHeader(lock, eff, crypt, checksum);
 }

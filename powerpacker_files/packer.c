@@ -11,6 +11,8 @@
 #include <proto/exec.h>
 #include <exec/emulation.h>
 
+#include <libraries/powerpacker.h>
+
 #include "common.h"
 
 const char PX20[] = "PX20";
@@ -67,40 +69,6 @@ static void encrypt(unsigned int* tmp, int size, unsigned int passwd)
 		int i;
 		for (i = 0; i < size; ++i)   *tmp++ ^= passwd;
 }
-
-typedef struct {
-	unsigned int token;
-	unsigned int* ptr;
-	unsigned int* ptr_max;
-} write_res_t;
-
-typedef struct {
-	unsigned short w00[4];
-	unsigned short w08[4];
-	unsigned short w10[4];
-	unsigned char b2C[4];
-	unsigned char* start;
-	unsigned int fsize;
-	unsigned char* src_end;
-
-	unsigned char** addrs;
-	unsigned int addrs_count;
-	unsigned char* dst;
-	unsigned int tmp[0x80];
-	unsigned char* print_pos;
-
-	unsigned short value;
-	unsigned short bits;
-
-	unsigned short* wnd1;
-	unsigned short* wnd2;
-	unsigned short wnd_max;
-	unsigned short wnd_off;
-	unsigned short wnd_left;
-
-	BOOL (*func)(ULONG,ULONG,APTR);
-} CrunchInfo;
-
 
 static unsigned char* updateSpeedupLarge(unsigned char* curr, unsigned char* next, int count, CrunchInfo* info)
 {
@@ -653,14 +621,6 @@ int ppDecrunchBuffer(unsigned char* src, unsigned int src_len, unsigned char* de
 	/* all output bytes written without error */
 	return 0;
 }
-
-typedef struct {
-	unsigned int tag;
-	unsigned char* src;
-	unsigned int src_len;
-	unsigned char* dst;
-	unsigned int dst_len;
-} decrunch_t;
 
 BOOL ppWriteDataHeader(
 	   BPTR lock,
