@@ -628,23 +628,18 @@ BOOL ppWriteDataHeader(
 	   BOOL crypt,
 	   ULONG checksum)
 {
-	int error = 0;
+	int success = false;
 	unsigned char eff_param1,eff_param2,eff_param3;
 	char b2C[4];
 
-	if (crypt) {
-		if (FWrite(lock, PX20, sizeof(PX20) - 1 ,1) != sizeof(PX20) - 1 ) {
-			error = 1;
-		}
-
-		if (!error && write_word( lock, checksum) != sizeof(checksum)) {
-			error = 1;
-		}
+	if (crypt) 
+	{
+		if (FWrite(lock, PX20, 1, sizeof(PX20) - 1) != sizeof(PX20) - 1 ) return false;
+		if (write_word( lock, checksum) != sizeof(checksum)) return false;
 	}
-	else {
-		if (!error && FWrite(lock, PP20, sizeof(PP20) - 1, 1) != sizeof(PP20) - 1) {
-			error = 1;
-		}
+	else
+	{
+		if (FWrite(lock, PP20, 1, sizeof(PP20) - 1) != sizeof(PP20) - 1) return false;
 	}
 
 	__get_eff_param( efficiency, &eff_param1, &eff_param2, &eff_param3 );
@@ -654,11 +649,9 @@ BOOL ppWriteDataHeader(
 	b2C[2] = eff_param1;
 	b2C[3] = eff_param2;
 
-	if (!error && FWrite( lock, b2C, 4, 1) != 1) {
-		error = 1;
-	}
+	if ( FWrite( lock, b2C, 4, 1) != 1) return false;
 
-	return error;
+	return true;
 }
 
 const char *error_messages[]=
