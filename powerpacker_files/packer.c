@@ -712,7 +712,8 @@ int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, 
 	int offset = 4;
 	unsigned short checksum = 0;
 
-	if (!memcmp(PP20, tag, sizeof(tag))) {
+	if (!memcmp(PP20, tag, sizeof(tag)))
+	{
 		ChangeFilePosition(f, -4, OFFSET_END);
 
 		dest_len = read_dword(f);
@@ -720,7 +721,8 @@ int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, 
 		read_len = buf_len - offset + sizeof(decrunch_t);
 		dest_len = (dest_len >> 8);
 	}
-	else if (!memcmp(PX20, tag, sizeof(tag))) {
+	else if (!memcmp(PX20, tag, sizeof(tag)))
+	{
 		checksum = read_word(f);
 		offset += 2;
 
@@ -731,12 +733,13 @@ int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, 
 		read_len = buf_len - offset + sizeof(decrunch_t);
 		dest_len = (dest_len >> 8);
 	}
-	else {
+	else
+	{
 		FClose(f);
 		return -1;
 	}
 
-	unsigned char* buffer = (unsigned char*)malloc(read_len);
+	unsigned char* buffer = (unsigned char*) AllocMem(read_len, memtype);
 	memset(buffer, 0, read_len);
 
 	if (buffer == NULL) {
@@ -794,7 +797,6 @@ int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, 
 		}
 
 		unsigned int key = ppCalcPasskey(passwd);
-
 		ppDecrypt(&info->src[4], read_len - sizeof(decrunch_t) - 8, key);
 	}
 
