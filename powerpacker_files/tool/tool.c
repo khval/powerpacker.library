@@ -26,6 +26,12 @@ static long get_file_size(const char* path)
 	return size;
 }
 
+static void encrypt(unsigned int* tmp, int size, unsigned int passwd)
+{
+		int i;
+		for (i = 0; i < size; ++i)   *tmp++ ^= passwd;
+}
+
 static int compress(const char* src_path, const char* dst_path, unsigned int fsize, CrunchInfo* info, const char* passwd, int eff)
 {
 	if (fsize == 0) return -1;
@@ -91,32 +97,30 @@ static int compress(const char* src_path, const char* dst_path, unsigned int fsi
 
 	BPTR dst_h = FOpen(dst_path, MODE_NEWFILE, 0 );
 
-	if (dst_h == NULL) {
+	if (dst_h == NULL)
+	{
 		printf("Can't open '%s' file!\n", dst_path);
 		free(info->start);
 		return -1;
 	}
 
-	int error = ppWriteDataHeader(dst_h, eff, passwd != NULL, checksum );
+	int success = ppWriteDataHeader(dst_h, eff, passwd != NULL, checksum );
 
-	if (error) {
-		printf("Error writing to '%s'!\n", dst_path);
-		free(dst_h);
+	if (! success)
+	{
+		printf("*1* Error writing to '%s'!\n", dst_path);
+		if (dst_h) FClose(dst_h);
 		free(info->start);
 		return -1;
 	}
 
-	if (!error && write_dwords(dst_h, (unsigned int*)info->start, crunched_len) != crunched_len) {
-		error = 1;
+	if ( write_dwords(dst_h, (unsigned int*)info->start, crunched_len) != crunched_len)
+	{
+		printf("*2* Error writing to '%s'!\n", dst_path);
 	}
 
 	FClose(dst_h);
 	free(info->start);
-
-	if (error) {
-		printf("Error writing to '%s'!\n", dst_path);
-		return -1;
-	}
 
 	return 0;
 }
@@ -139,7 +143,7 @@ static void print_help() {
 }
 
 
-int main(int argc, char* argv[])
+int _main(int argc, char* argv[])
 {
 	printf("POWER-PACKER 36.10 (28.9.93) Data Cruncher.\n");
 	printf("  Written by Nico Franuois (POWER PEAK)\n");
@@ -210,17 +214,18 @@ int main(int argc, char* argv[])
 	}
 	else {
 		decrunch_t* info;
+		ULONG lenptr;
 
-		result = ppLoadData(argv[1], &info, passwd[0] != 0 ? passwd : NULL);
+		result = ppLoadData(argv[1], 0, MEMF_ANY,  &info, &lenptr, NULL );
 
 		if (info == NULL) {
 			printf("Cannot decrunch '%s'!\n", argv[1]);
 			return -1;
 		}
 
-		BPTR dst_h = FOpen(argv[2], "wb",0);
+		BPTR dst_h = FOpen(argv[2], MODE_NEWFILE ,0);
 
-		if (dst_h == NULL)
+		if (dst_h == 0)
 		{
 			printf("Cannot open '%s' for write!\n", argv[2]);
 			free(info);
@@ -236,35 +241,23 @@ int main(int argc, char* argv[])
 		printf("Successfully decrunched '%s' into '%s'\n", argv[1], argv[2]);
 		printf("Result: %d -> %d bytes\n", info->src_len, info->dst_len);
 
-		free(info);
+		FreeMem(info,lenptr);
 		FClose(dst_h);
 	}
 
 	return result;
 }
 
-int ppWriteDataHeader(int eff, int crypt, unsigned short checksum, unsigned char* table, BPTR dst_h) {
-	int error = 0;
+extern BOOL open_libs();
+extern void close_libs();
 
-	if (crypt) {
-		if (fwrite(PX20, 1, sizeof(PX20) - 1, dst_h) != sizeof(PX20) - 1) {
-			error = 1;
-		}
-
-		if (!error && write_word(dst_h, checksum) != sizeof(checksum)) {
-			error = 1;
-		}
+int main(int argc, char* argv[])
+{
+	if (open_libs())
+	{
+		return _main( argc, argv );
 	}
-	else {
-		if (!error && fwrite(PP20, 1, sizeof(PP20) - 1, dst_h) != sizeof(PP20) - 1) {
-			error = 1;
-		}
-	}
-
-	if (!error && fwrite(table, 1, 4, dst_h) != 4) {
-		error = 1;
-	}
-
-	return error;
+	close_libs();
+	return -25;
 }
 
