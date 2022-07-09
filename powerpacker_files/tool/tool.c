@@ -28,8 +28,8 @@ static long get_file_size(const char* path)
 
 static void encrypt(unsigned int* tmp, int size, unsigned int passwd)
 {
-		int i;
-		for (i = 0; i < size; ++i)   *tmp++ ^= passwd;
+	int i;
+	for (i = 0; i < size; ++i)   *tmp++ ^= passwd;
 }
 
 static int compress(const char* src_path, const char* dst_path, unsigned int fsize, CrunchInfo* info, const char* passwd, int eff)
@@ -86,7 +86,8 @@ static int compress(const char* src_path, const char* dst_path, unsigned int fsi
 
 	printf("\n");
 
-	if (passwd) {
+	if (passwd)
+	{
 		printf("Encrypting...\n");
 		encrypt((unsigned int*)info->start, (crunched_len / 4) - 1, passkey);
 	}
@@ -104,9 +105,7 @@ static int compress(const char* src_path, const char* dst_path, unsigned int fsi
 		return -1;
 	}
 
-	int success = ppWriteDataHeader(dst_h, eff, passwd != NULL, checksum );
-
-	if (! success)
+	if ( ! ppWriteDataHeader(dst_h, eff, passwd != NULL, checksum ) )
 	{
 		printf("*1* Error writing to '%s'!\n", dst_path);
 		if (dst_h) FClose(dst_h);
@@ -121,11 +120,11 @@ static int compress(const char* src_path, const char* dst_path, unsigned int fsi
 
 	FClose(dst_h);
 	free(info->start);
-
 	return 0;
 }
 
-static void print_help() {
+static void print_help()
+{
 	printf(
 		"  Crunch: powerpack <source> <destination> <-c> [-e=EFFICIENCY] [-p=PASSWORD] [-o] [-h]\n"
 		"Decrunch: powerpack <source> <destination> <-d> [-p=PASSWORD] [-h]\n"
@@ -138,8 +137,7 @@ static void print_help() {
 		"			  The difference in the size of a window:\n"
 		"			  - Old version: 0x4000\n"
 		"			  - New version: 0x8000\n"
-		"		  -h: Show this help\n\n"
-	);
+		"		  -h: Show this help\n\n");
 }
 
 
@@ -147,10 +145,11 @@ int _main(int argc, char* argv[])
 {
 	printf("POWER-PACKER 36.10 (28.9.93) Data Cruncher.\n");
 	printf("  Written by Nico Franuois (POWER PEAK)\n");
-	printf("  Decompiled by Dr. MefistO in 2020\n");
+	printf("  POWERPACK created by Dr. MefistO in 2020, based on pplib 1.0 (2003)\n");
 	printf("  Version: v1.0\n\n");
 
-	if (argc < 2) {
+	if (argc < 2)
+	{
 		print_help();
 		return -1;
 	}
@@ -163,39 +162,42 @@ int _main(int argc, char* argv[])
 	int i = 3;
 	int mode = -1;
 
-	while (i < argc) {
-		if (((argv[i][0] == '-') || (argv[i][0] == '/'))) {
-			switch (argv[i][1]) {
-			case 'c': {
-				mode = 0;
-			} break;
-			case 'd': {
-				mode = 1;
-			} break;
-			case 'h':
-				print_help();
-				return 0;
-			case 'e': {
-				if (sscanf(&argv[i][3], "%d", &eff) != 1) {
-					return -1;
-				}
-			} break;
-			case 'p': {
-				if (sscanf(&argv[i][3], "%16s", passwd) != 1) {
-					return -1;
-				}
-			} break;
-			case 'o': {
-				old_version = 1;
-				break;
-			}
+	while (i < argc)
+	{
+		if (((argv[i][0] == '-') || (argv[i][0] == '/')))
+		{
+			switch (argv[i][1])
+			{
+				case 'c': 
+					mode = 0;
+					break;
+
+				case 'd':
+					mode = 1;
+					break;
+
+				case 'h':
+					print_help();
+					return 0;
+
+				case 'e': 
+					if (sscanf(&argv[i][3], "%d", &eff) != 1) return -1;
+					break;
+
+				case 'p': 
+					if (sscanf(&argv[i][3], "%16s", passwd) != 1) return -1;
+					break;
+
+				case 'o': 
+					old_version = 1;
+					break;
 			}
 		}
-
 		i++;
 	}
 
-	if (mode == -1) {
+	if (mode == -1)
+	{
 		printf("Incorrect mode. Please, use '-c' to crunch or '-d' to decrunch\n\n");
 		print_help();
 		return -1;
@@ -203,7 +205,8 @@ int _main(int argc, char* argv[])
 
 	int result = -1;
 
-	if (mode == 0) {
+	if (mode == 0)
+	{
 		CrunchInfo* info = ppAllocCrunchInfo(eff, old_version, NULL, NULL);
 
 		unsigned int fsize = get_file_size(argv[1]);
@@ -212,15 +215,17 @@ int _main(int argc, char* argv[])
 		ppFreeCrunchInfo(info);
 		printf("\nDone.\n");
 	}
-	else {
+	else
+	{
 		decrunch_t* info;
 		ULONG lenptr;
 
 		result = ppLoadData(argv[1], 0, MEMF_ANY,  &info, &lenptr, NULL );
 
-		if (info == NULL) {
+		if (info == NULL)
+		{
 			printf("Cannot decrunch '%s'!\n", argv[1]);
-			return -1;
+			return 224;
 		}
 
 		BPTR dst_h = FOpen(argv[2], MODE_NEWFILE ,0);
@@ -229,13 +234,13 @@ int _main(int argc, char* argv[])
 		{
 			printf("Cannot open '%s' for write!\n", argv[2]);
 			free(info);
-			return -1;
+			return 223;
 		}
 
 		if (FWrite(dst_h, info->dst, 1, info->dst_len) != info->dst_len)
 		{
 			printf("Cannot write to '%s'!\n", argv[2]);
-			result = -1;
+			result = 223;
 		}
 
 		printf("Successfully decrunched '%s' into '%s'\n", argv[1], argv[2]);
@@ -253,11 +258,12 @@ extern void close_libs();
 
 int main(int argc, char* argv[])
 {
+	int ret = 122;
 	if (open_libs())
 	{
-		return _main( argc, argv );
+		ret = _main( argc, argv );
 	}
 	close_libs();
-	return -25;
+	return ret;
 }
 

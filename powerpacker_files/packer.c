@@ -1,8 +1,9 @@
 
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 #include <limits.h>
 
 #define __USE_INLINE__
@@ -14,6 +15,7 @@
 #include <libraries/powerpacker.h>
 
 #include "common.h"
+#include "valid_functions.h"
 
 const char PX20[] = "PX20";
 const char PP20[] = "PP20";
@@ -51,7 +53,8 @@ unsigned int ppCalcPasskey(const char* passwd) {
 	return result;
 }
 		
-unsigned short ppCalcChecksum(const char* passwd) {
+unsigned short ppCalcChecksum(const char* passwd)
+{
 	unsigned short result = 0;
 
 	while (*passwd)
@@ -427,7 +430,7 @@ static void print_progress(unsigned int src_off, unsigned int dst_off, unsigned 
 	printf("\r%u%% crunched. (%u%% gain)   ", crunched, 100 - gain);
 }
 
-int ppCrunchBuffer( CrunchInfo* info,unsigned char* buf,	unsigned int len) 
+ULONG ppCrunchBuffer( CrunchInfo* info,unsigned char* buf, unsigned int len) 
 {
 	info->start = buf;
 	info->fsize = len;
@@ -438,6 +441,7 @@ int ppCrunchBuffer( CrunchInfo* info,unsigned char* buf,	unsigned int len)
 
 ULONG ppCrunchBufferDest( UBYTE * crunchinfo, UBYTE * buffer, UBYTE * dest, ULONG len)
 {
+	printf("%s:%d (error: missing / not supported)\n",__FUNCTION__,__LINE__);
 	return 0;
 }
 
@@ -535,8 +539,7 @@ CrunchInfo* ppAllocCrunchInfo( ULONG efficiency, ULONG speedup, BOOL (*func)(ULO
 	return NULL;
 }
 
-
-void ppDecrypt(unsigned char* buffer, int size, unsigned int key)
+void ppDecrypt( unsigned char* buffer, unsigned int size, unsigned int key)
 {
 	int i;
 	for ( i = 0; i < size; i += 4)
@@ -574,25 +577,51 @@ void ppDecrypt(unsigned char* buffer, int size, unsigned int key)
 		*--out = (byte); written++;								\
 } while (0)
 
-int ppDecrunchBuffer(unsigned char* src, unsigned int src_len, unsigned char* dest, unsigned int dest_len) {
+int ppDecrunchBuffer(unsigned char* src, unsigned int src_len, unsigned char* dest, unsigned int dest_len)
+{
 	unsigned char* buf, *out, *dest_end, *off_lens, bits_left = 0, bit_cnt;
 	unsigned int bit_buffer = 0, x, todo, offbits, offset, written = 0;
 
+	printf("ppDecrunchBuffer(src: %08x, src_len %d, dest: %08x, dest len %d)\n",
+			src,src_len,dest,dest_len	);
+
 	if (!src || !dest) return -1;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	/* set up input and output pointers */
 	off_lens = src; src = &src[4];
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	buf = &src[src_len];
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	out = dest_end = &dest[dest_len];
 
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("src: %08x\n",src);
+	printf("buf: %08x\n",buf);
+	printf("out: %08x\n",out);
+
 	/* skip the first few bits */
-	PP_READ_BITS(src[src_len + 3], x);
+//	PP_READ_BITS(src[src_len + 3], x); // unchanged
+
+	PP_READ_BITS(src[src_len + 0], x);
+
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	/* while there are input bits left */
-	while (written < dest_len) {
+	while (written < dest_len) 
+	{
+		printf("has written %d of %d\n",written,dest_len);
+
 		PP_READ_BITS(1, x);
-		if (x == 0) {
+		if (x == 0)
+		{
 			/* bit==0: literal, then match. bit==1: just match */
 			todo = 1; do { PP_READ_BITS(2, x); todo += x; } while (x == 3);
 			while (todo--) { PP_READ_BITS(8, x); PP_BYTE_OUT(x); }
@@ -605,13 +634,15 @@ int ppDecrunchBuffer(unsigned char* src, unsigned int src_len, unsigned char* de
 		PP_READ_BITS(2, x);
 		offbits = off_lens[x];
 		todo = x + 2;
-		if (x == 3) {
+		if (x == 3)
+		{
 			PP_READ_BITS(1, x);
 			if (x == 0) offbits = 7;
 			PP_READ_BITS(offbits, offset);
 			do { PP_READ_BITS(3, x); todo += x; } while (x == 7);
 		}
-		else {
+		else
+		{
 			PP_READ_BITS(offbits, offset);
 		}
 		if (&out[offset] >= dest_end) return -1; /* match_overflow */
@@ -622,11 +653,7 @@ int ppDecrunchBuffer(unsigned char* src, unsigned int src_len, unsigned char* de
 	return 0;
 }
 
-BOOL ppWriteDataHeader(
-	   BPTR lock,
-	   ULONG efficiency,
-	   BOOL crypt,
-	   ULONG checksum)
+BOOL ppWriteDataHeader(  BPTR lock, ULONG efficiency, BOOL crypt,  ULONG checksum)
 {
 	int success = false;
 	unsigned char eff_param1,eff_param2,eff_param3;
@@ -678,7 +705,7 @@ BOOL ppGetPassword( struct Screen * screen, ULONG * buffer, ULONG maxchars, ULON
 	return FALSE;
 }
 
-int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, ULONG * lenptr, BOOL (*password_func)(UBYTE *, ULONG)) 
+ULONG ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, ULONG * lenptr, BOOL (*password_func)(UBYTE *, ULONG)) 
 {
 	char *passwd = NULL;
 	*bufferptr = NULL;
@@ -740,12 +767,13 @@ int ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, 
 	}
 
 	unsigned char* buffer = (unsigned char*) AllocMem(read_len, memtype);
-	memset(buffer, 0, read_len);
-
-	if (buffer == NULL) {
+	if (buffer == NULL) 
+	{
 		FClose(f);
 		return -1;
 	}
+
+	memset(buffer, 0, read_len);
 
 	ChangeFilePosition(f, offset, OFFSET_BEGINNING);
 

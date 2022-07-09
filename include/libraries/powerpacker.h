@@ -2,11 +2,13 @@
 #ifndef header_powerpacker_h
 #define header_powerpacker_h
 
-typedef struct {
-	unsigned int token;
-	unsigned int* ptr;
-	unsigned int* ptr_max;
-} write_res_t;
+#ifdef __GNUC__
+   #ifdef __PPC__
+    #pragma pack(2)
+   #endif
+#elif defined(__VBCC__)
+   #pragma amiga-align
+#endif
 
 typedef struct {
 	unsigned int tag;
@@ -15,6 +17,20 @@ typedef struct {
 	unsigned char* dst;
 	unsigned int dst_len;
 } decrunch_t;
+
+typedef struct {
+	unsigned int token;
+	unsigned int* ptr;
+	unsigned int* ptr_max;
+} write_res_t;
+
+#ifdef __GNUC__
+   #ifdef __PPC__
+    #pragma pack()
+   #endif
+#elif defined(__VBCC__)
+   #pragma default-align
+#endif
 
 typedef struct {
 	unsigned short w00[4];

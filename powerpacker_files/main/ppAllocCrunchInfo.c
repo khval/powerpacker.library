@@ -21,6 +21,7 @@
 #include <libraries/powerpacker.h>
 #include <proto/powerpacker.h>
 #include <stdarg.h>
+#include "../valid_functions.h"
 
 /****** powerpacker/main/ppAllocCrunchInfo ******************************************
 *
@@ -60,6 +61,6 @@ APTR _powerpacker_ppAllocCrunchInfo(struct PowerPackerIFace *Self,
        BOOL (*func)(),
        APTR userdata)
 {
-  return ppAllocCrunchInfo(eff, speedup, func, userdata);
+	return ppAllocCrunchInfo(eff, speedup, func, userdata);
 }
 

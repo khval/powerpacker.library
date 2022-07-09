@@ -21,6 +21,7 @@
 #include <libraries/powerpacker.h>
 #include <proto/powerpacker.h>
 #include <stdarg.h>
+#include "../valid_functions.h"
 
 /****** powerpacker/main/ppDecrypt ******************************************
 *
@@ -28,7 +29,7 @@
 *      ppDecrypt -- Description
 *
 *   SYNOPSIS
-*      void ppDecrypt(UBYTE * buffer, ULONG * len, ULONG key);
+*      void ppDecrypt(UBYTE * buffer, ULONG len, ULONG key);
 *
 *   FUNCTION
 *
@@ -54,7 +55,7 @@
 
 void _powerpacker_ppDecrypt(struct PowerPackerIFace *Self,
        UBYTE * buffer,
-       ULONG * len,
+       ULONG len,
        ULONG key)
 {
   ppDecrypt(buffer, len, key);

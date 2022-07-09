@@ -1,0 +1,3 @@
+powerpack s:User-Startup ram:user-startup.pp -c
+powerpack ram:user-startup.pp ram:user-startup.pp.unpacked -d
+

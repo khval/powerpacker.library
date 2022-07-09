@@ -21,6 +21,7 @@
 #include <libraries/powerpacker.h>
 #include <proto/powerpacker.h>
 #include <stdarg.h>
+#include "../valid_functions.h"
 
 /****** powerpacker/main/ppErrorMessage ******************************************
 *
@@ -49,6 +50,8 @@
 *****************************************************************************
 *
 */
+
+char * ppErrorMessage(ULONG error );
 
 char * _powerpacker_ppErrorMessage(struct PowerPackerIFace *Self,
        ULONG error)

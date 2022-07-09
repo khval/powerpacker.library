@@ -39,7 +39,7 @@ struct PowerPackerIFace
 	void APICALL (*ppDecrunchBuffer)(struct PowerPackerIFace *Self, UBYTE * endcrun, UBYTE * decrbuff, ULONG * effptr, ULONG col);
 	ULONG APICALL (*ppCalcChecksum)(struct PowerPackerIFace *Self, char * string);
 	ULONG APICALL (*ppCalcPasskey)(struct PowerPackerIFace *Self, char * string);
-	void APICALL (*ppDecrypt)(struct PowerPackerIFace *Self, UBYTE * buffer, ULONG * len, ULONG key);
+	void APICALL (*ppDecrypt)(struct PowerPackerIFace *Self, UBYTE * buffer, ULONG len, ULONG key);
 	BOOL APICALL (*ppGetPassword)(struct PowerPackerIFace *Self, struct Screen * screen, ULONG * buffer, ULONG maxchars, ULONG checksum);
 	APTR APICALL (*ppAllocCrunchInfo)(struct PowerPackerIFace *Self, ULONG eff, ULONG speedup, BOOL (*func)(), APTR userdata);
 	void APICALL (*ppFreeCrunchInfo)(struct PowerPackerIFace *Self, APTR crunchinfo);

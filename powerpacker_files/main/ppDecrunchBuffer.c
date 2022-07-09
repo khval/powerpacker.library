@@ -21,6 +21,7 @@
 #include <libraries/powerpacker.h>
 #include <proto/powerpacker.h>
 #include <stdarg.h>
+#include "../valid_functions.h"
 
 /****** powerpacker/main/ppDecrunchBuffer ******************************************
 *
@@ -53,6 +54,12 @@
 *****************************************************************************
 *
 */
+
+void ppDecrunchBuffer(
+       UBYTE * endcrun,
+       UBYTE * decrbuff,
+       ULONG * effptr,
+       ULONG col);
 
 void _powerpacker_ppDecrunchBuffer(struct PowerPackerIFace *Self,
        UBYTE * endcrun,

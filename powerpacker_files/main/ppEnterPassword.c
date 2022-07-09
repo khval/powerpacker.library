@@ -21,6 +21,7 @@
 #include <libraries/powerpacker.h>
 #include <proto/powerpacker.h>
 #include <stdarg.h>
+#include "../valid_functions.h"
 
 /****** powerpacker/main/ppEnterPassword ******************************************
 *
@@ -50,6 +51,8 @@
 *****************************************************************************
 *
 */
+
+BOOL ppEnterPassword(  struct Screen * screen, UBYTE * buffer);
 
 BOOL _powerpacker_ppEnterPassword(struct PowerPackerIFace *Self,
        struct Screen * screen,

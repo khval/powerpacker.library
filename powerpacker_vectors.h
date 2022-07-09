@@ -23,7 +23,7 @@ extern ULONG                VARARGS68K _powerpacker_ppLoadData(struct PowerPacke
 extern void                 VARARGS68K _powerpacker_ppDecrunchBuffer(struct PowerPackerIFace *, UBYTE * endcrun, UBYTE * decrbuff, ULONG * effptr, ULONG col);
 extern ULONG                VARARGS68K _powerpacker_ppCalcChecksum(struct PowerPackerIFace *, char * string);
 extern ULONG                VARARGS68K _powerpacker_ppCalcPasskey(struct PowerPackerIFace *, char * string);
-extern void                 VARARGS68K _powerpacker_ppDecrypt(struct PowerPackerIFace *, UBYTE * buffer, ULONG * len, ULONG key);
+extern void                 VARARGS68K _powerpacker_ppDecrypt(struct PowerPackerIFace *, UBYTE * buffer, ULONG len, ULONG key);
 extern BOOL                 VARARGS68K _powerpacker_ppGetPassword(struct PowerPackerIFace *, struct Screen * screen, ULONG * buffer, ULONG maxchars, ULONG checksum);
 extern APTR                 VARARGS68K _powerpacker_ppAllocCrunchInfo(struct PowerPackerIFace *, ULONG eff, ULONG speedup, BOOL (*func)(), APTR userdata);
 extern void                 VARARGS68K _powerpacker_ppFreeCrunchInfo(struct PowerPackerIFace *, APTR crunchinfo);

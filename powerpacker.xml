@@ -30,7 +30,7 @@
 		</method>
 		<method name="ppDecrypt" result="void">
 			<arg name="buffer" type="UBYTE *"/>
-			<arg name="len" type="ULONG *"/>
+			<arg name="len" type="ULONG"/>
 			<arg name="key" type="ULONG"/> 
 		</method>
 		<method name="ppGetPassword" result="BOOL">
