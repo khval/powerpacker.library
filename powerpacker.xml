@@ -63,8 +63,8 @@
 			<arg name="screen" type="struct Screen *"/>
 			<arg name="buffer" type="UBYTE *"/>
 		</method>
-		<method name="ppErrorMessage" result="char *">
-			<arg name="error" type="ULONG"/>
+		<method name="ppErrorMessage" result="const char *">
+			<arg name="error" type="LONG"/>
 		</method>
 		<method name="ppCrunchBufferDest" result="ULONG">
 			<arg name="crunchinfo" type="UBYTE *"/>

@@ -297,6 +297,13 @@ void ppDecrypt(unsigned char *data, unsigned int len, unsigned int key)
     } while (len--);
 }
 
+void ppOBSOLETE()
+{
+	printf("PowerPacker.library: unexpected function call\n");
+}
 
-
+void ppOverlayDecrHdr()
+{
+	printf("PowerPacker.library: unexpected function call\n");
+}
 

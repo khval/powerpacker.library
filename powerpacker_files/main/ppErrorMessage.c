@@ -51,8 +51,6 @@
 *
 */
 
-char * ppErrorMessage(ULONG error );
-
 char * _powerpacker_ppErrorMessage(struct PowerPackerIFace *Self,
        ULONG error)
 {

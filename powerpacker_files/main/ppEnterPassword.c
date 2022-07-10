@@ -52,8 +52,6 @@
 *
 */
 
-BOOL ppEnterPassword(  struct Screen * screen, UBYTE * buffer);
-
 BOOL _powerpacker_ppEnterPassword(struct PowerPackerIFace *Self,
        struct Screen * screen,
        UBYTE * buffer)

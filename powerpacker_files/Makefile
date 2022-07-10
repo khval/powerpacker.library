@@ -40,7 +40,8 @@ main_SRCS = main/Obtain.c main/Release.c main/ppLoadData.c \
     main/ppWriteDataHeader.c main/ppEnterPassword.c main/ppErrorMessage.c \
 	pplib.c \
 	pplib_extra.c \
-	ppc.c
+	ppc.c \
+	68k_stubs.c
 
 # -------------------------------------------------------------
 # Nothing should need changing below this line

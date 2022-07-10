@@ -11,6 +11,7 @@ ULONG ppCrunchBufferDest( unsigned char * crunchinfo, unsigned char * buffer, un
 void ppFreeCrunchInfo( CrunchInfo* crunchinfo );
 BOOL ppGetPassword( struct Screen * screen, ULONG * buffer, ULONG maxchars, ULONG checksum);
 ULONG ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufferptr, ULONG * lenptr, BOOL (*password_func)(UBYTE *, ULONG));
-
-
+void ppDecrunchBuffer( UBYTE * endcrun, UBYTE * decrbuff, ULONG * effptr, ULONG col);
+const char *ppErrorMessage(LONG error);
+BOOL ppEnterPassword( struct Screen * screen, UBYTE * buffer);
 
