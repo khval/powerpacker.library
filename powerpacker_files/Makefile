@@ -38,7 +38,8 @@ main_SRCS = main/Obtain.c main/Release.c main/ppLoadData.c \
     main/ppDecrypt.c main/ppGetPassword.c main/ppAllocCrunchInfo.c \
     main/ppFreeCrunchInfo.c main/ppCrunchBuffer.c main/ppCrunchBufferDest.c \
     main/ppWriteDataHeader.c main/ppEnterPassword.c main/ppErrorMessage.c \
-	packer.c \
+	pplib.c \
+	pplib_extra.c \
 	ppc.c
 
 # -------------------------------------------------------------
@@ -50,6 +51,13 @@ OBJS = $(main_SRCS:.c=.o)  $(SRCS:.c=.o)
 # Rules for building
 $(TARGET): $(OBJS)
 	$(CC) $(LINK) -nostartfiles -o $(TARGET) $(OBJS) $(LIBS)
+
+pplib.o: pplib.c pplib.h
+	gcc  -I./ -DUSE_PPLOADDATA -D__USE_INLINE__ -Wall -O3    -c -o pplib.o pplib.c 
+
+pplib_extra.o: pplib_extra.c pplib.h
+	gcc  -I./ -DUSE_PPLOADDATA -D__USE_INLINE__ -Wall -O3    -c -o pplib_extra.o pplib_extra.c 
+
 
 .PHONY: clean
 clean:

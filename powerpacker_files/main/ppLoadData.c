@@ -21,7 +21,9 @@
 #include <libraries/powerpacker.h>
 #include <proto/powerpacker.h>
 #include <stdarg.h>
-#include "../valid_functions.h"
+
+#define USE_PPLOADDATA
+#include "../pplib.h"
 
 /****** powerpacker/main/ppLoadData ******************************************
 *

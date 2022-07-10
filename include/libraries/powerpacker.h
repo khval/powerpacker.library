@@ -56,7 +56,7 @@ typedef struct {
 	unsigned short wnd_off;
 	unsigned short wnd_left;
 
-	BOOL (*func)(ULONG,ULONG,APTR);
+	BOOL (*progress_fn)(ULONG,ULONG,APTR);
 } CrunchInfo;
 
 

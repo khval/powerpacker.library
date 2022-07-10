@@ -14,6 +14,8 @@ extern size_t write_dwords(BPTR f, unsigned int* buf, int count);
 extern unsigned short read_word(BPTR f);
 extern unsigned int read_dword(BPTR f);
 
+static void print_progress(unsigned int src_off, unsigned int dst_off, unsigned int fsize);
+
 static long get_file_size(const char* path)
 {
 	BPTR f = FOpen(path, MODE_OLDFILE,0);
@@ -252,6 +254,19 @@ int _main(int argc, char* argv[])
 
 	return result;
 }
+
+static void print_progress(unsigned int src_off, unsigned int dst_off, unsigned int fsize)
+{
+	if (src_off == 0) {
+		return;
+	}
+
+	unsigned int crunched = (src_off * 100) / fsize;
+	unsigned int gain = (dst_off * 100) / src_off;
+
+	printf("\r%u%% crunched. (%u%% gain)   ", crunched, 100 - gain);
+}
+
 
 extern BOOL open_libs();
 extern void close_libs();
