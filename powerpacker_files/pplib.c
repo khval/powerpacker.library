@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <proto/dos.h>
 #include <proto/exec.h>
@@ -57,7 +58,10 @@ ULONG ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufptr, U
 {
 	unsigned char *src = NULL, *dest;
 	unsigned int srclen, destlen;
-	int err = PPERR_OK, eff;
+	int err = PPERR_OK;
+	int efficiency_off;
+	int src_off;
+
 	BPTR fh;
 	*bufptr = NULL;
 
@@ -85,9 +89,26 @@ ULONG ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufptr, U
 
 	switch ((src[0] << 24) | (src[1] << 16) | (src[2] << 8) | src[3]) 
 	{
-		case 0x50503230: eff = 4; break; /* PP20 */
-		case 0x50504C53: eff = 8; break; /* PPLS */
-		case 0x50583230: eff = 6;        /* PX20 */
+		case 0x50503230: /* PP20 */
+		case 0x5050324F: /* PP2O */
+		case 0x5041434B: /* PACK */
+		case 0x4D4C4443: /* MLDC */
+		case 0x44454E21: /* DEN! */
+		case 0x4D443132: /* MD12 */
+		case 0x47415A21: /* GAZ! */
+		case 0x58583530: /* XX50 */
+		case 0x4C523838: /* LR88 */
+		case 0x29075337:
+				efficiency_off = 4;
+				src_off        = 8;
+				break;
+
+		case 0x50504C53: /* PPLS */
+				efficiency_off = 8; 
+				src_off = 12;
+				break; 
+
+		case 0x50583230: efficiency_off = 6;        /* PX20 */
 				{
 					char password[16];
 					ULONG checksum = ((src[4]<<8)|src[5]);
@@ -118,10 +139,7 @@ ULONG ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufptr, U
 
 	if ((dest = (unsigned char*) AllocMem(destlen, memtype)))
 	{
-		printf("ppDecrunchBuffer(%08x, %08x, %08x, %d, %d)\n",
-				&src[eff], &src[eff+4], dest, srclen-(eff+8), destlen	);
-
-		if (!ppDecrunchBuffer_m(&src[eff], &src[eff+4], dest, srclen-(eff+8), destlen))
+		if (!ppDecrunchBuffer(&src[efficiency_off], &src[src_off], dest, srclen-src_off-4, destlen))
 			err = PPERR_DECRUNCH;
 	}
   
@@ -189,7 +207,7 @@ static int ppDecrunchBuffer_main(const unsigned char *eff,
 		if (x == litbit)
 		{
 			todo = 1; do { PP_READ_BITS(2, x); todo += x; } while (x == 3);
-			while (todo--) { PP_READ_BITS(8, x); printf("%c",x); PP_BYTE_OUT(x); }
+			while (todo--) { PP_READ_BITS(8, x); PP_BYTE_OUT(x); }
 
 			/* should we end decoding on a literal, break out */
 			if (written == dest_len) break;
@@ -209,9 +227,6 @@ static int ppDecrunchBuffer_main(const unsigned char *eff,
 	    PP_READ_BITS(offbits, offset);
 	}
 
-
-	printf("out[offset: %d]: %08x >= %08x\n",offset, &out[offset],dest_end);
-
 	if (&out[offset] >= dest_end)
 	{
 		printf("match overflow\n");
@@ -219,7 +234,7 @@ static int ppDecrunchBuffer_main(const unsigned char *eff,
 		 return 0; /* match_overflow */
 	}
 
-	while (todo--) { x = out[offset]; printf("%c",x); PP_BYTE_OUT(x); }
+	while (todo--) { x = out[offset]; PP_BYTE_OUT(x); }
     }
 
     /* all output bytes written without error */

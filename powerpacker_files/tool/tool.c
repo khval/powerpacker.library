@@ -1,9 +1,8 @@
-
+#include <stdlib.h>
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 #include <proto/exec.h>
 #include <proto/dos.h>
@@ -219,36 +218,40 @@ int _main(int argc, char* argv[])
 	}
 	else
 	{
-		decrunch_t* info;
-		ULONG lenptr;
+//		decrunch_t* info;
 
-		result = ppLoadData(argv[1], 0, MEMF_ANY,  &info, &lenptr, NULL );
+		unsigned char *bufptr;
+		ULONG buflenptr;
 
-		if (info == NULL)
+		result = ppLoadData(argv[1], 0, MEMF_ANY,  &bufptr, &buflenptr, NULL );
+
+		if (bufptr == NULL)
 		{
 			printf("Cannot decrunch '%s'!\n", argv[1]);
 			return 224;
 		}
 
 		BPTR dst_h = FOpen(argv[2], MODE_NEWFILE ,0);
-
 		if (dst_h == 0)
 		{
 			printf("Cannot open '%s' for write!\n", argv[2]);
-			free(info);
+			free(bufptr);
 			return 223;
 		}
-
-		if (FWrite(dst_h, info->dst, 1, info->dst_len) != info->dst_len)
+		else
 		{
-			printf("Cannot write to '%s'!\n", argv[2]);
-			result = 223;
+
+			if (FWrite(dst_h, bufptr, 1, buflenptr) != buflenptr)
+			{
+				printf("Cannot write to '%s'!\n", argv[2]);
+				result = 223;
+			}
+
+			printf("Successfully decrunched '%s' into '%s'\n", argv[1], argv[2]);
+//			printf("Result: %d -> %d bytes\n", info->src_len, buflenptr);
 		}
 
-		printf("Successfully decrunched '%s' into '%s'\n", argv[1], argv[2]);
-		printf("Result: %d -> %d bytes\n", info->src_len, info->dst_len);
-
-		FreeMem(info,lenptr);
+		if (bufptr) FreeMem(bufptr,buflenptr);
 		FClose(dst_h);
 	}
 
