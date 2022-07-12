@@ -13,7 +13,11 @@ The aim of this project is to create native version of this Amiga library, in or
 
 # History
 
-03.07.2022: Changed done by LiveForit (Kjetil Hvalstrand) 
+RELEASE 1.8 PPC (Library Version 38.01)
+
+    (Skipping 1.7 as there exists 68k version with that number.)
+
+    03.07.2022: Changed done by LiveForit (Kjetil Hvalstrand) 
     Generated all AmigaOS4 header files for the library.
     Started the work of converting it back into a library.
     Started looking for any copyright notice, and trying to figure out status of this thing.
@@ -21,7 +25,7 @@ The aim of this project is to create native version of this Amiga library, in or
     the decompression routines can be found all over the place. 
     See LICENCE for more info.
 
-09.08.2020: Decompiled by Dr. MefistO in 2020, Version: v1.0
+    09.08.2020: Decompiled by Dr. MefistO in 2020, Version: v1.0
     decompiled the original library and restored source code of the original compression algo (including the encryption).
 
 RELEASE 1.6 (Library Version 36.10)
