@@ -27,6 +27,9 @@ void ppFreeCrunchInfo( CrunchInfo* info );
 static unsigned char* updateSpeedupLarge(unsigned char* curr, unsigned char* next, int count, CrunchInfo* info);
 static void prepareDict(int repeats, CrunchInfo* info);
 
+
+char *req_input(struct Screen *screen, const char *title,  const char *body, const char *buttons, ULONG image, int maxlen );
+
 const char *ppErrorMessage (ULONG errorcode)
 {
 	const char *error_str = "N/A";
@@ -73,14 +76,29 @@ const char *ppErrorMessage (ULONG errorcode)
 
 BOOL ppEnterPassword( struct Screen * screen, UBYTE * buffer)
 {
-#warning "ppEnterPassword: is not implemented"
+	char *password = req_input(screen, "powerpacker.library", "Password:", "OK", 0, 17 );
+
+	if (password)
+	{
+		memcpy( buffer, password,strlen(password)+1);	// copy str with /0..
+		free(password);
+		return TRUE;
+	}
 
 	return FALSE;
 }
 
 BOOL ppGetPassword( struct Screen * screen, ULONG * buffer, ULONG maxchars, ULONG checksum)
 {
-#warning "ppGetPassword: is not implemented"
+	char *password = req_input(screen, "powerpacker.library", "Password:", "OK", 0, maxchars );
+
+	if (password)
+	{
+		memcpy( buffer, password,strlen(password)+1);	// copy str with /0..
+		free(password);
+		return (ppCalcPasskey(password) == checksum) ;
+	}
+
 	return FALSE;
 }
 
@@ -192,6 +210,31 @@ static void writeMoreBits(int count, write_res_t* dst, CrunchInfo* info)
 }
 
 
+BOOL call_progress_fn(BOOL (*progress_func)(ULONG,ULONG,ULONG,APTR), ULONG lensofar, ULONG crunlen, ULONG totlen, APTR userdata )
+{
+	BOOL progress_pass = FALSE;
+
+	if (progress_func)
+	{
+		if (IsNative(progress_func))
+		{
+			progress_pass = progress_func( lensofar, crunlen, totlen, userdata );
+		}
+		else
+		{
+			progress_pass = EmulateTags( progress_func,
+						ET_RegisterD0, lensofar,
+						ET_RegisterD1, crunlen,
+						ET_RegisterD2, totlen,
+						ET_RegisterA0, userdata,
+						TAG_END);
+		}
+		return progress_pass;
+	}
+	return FALSE;
+}
+
+
 static int ppCrunchBuffer_sub(CrunchInfo* info)
 {
 	int i;
@@ -231,12 +274,17 @@ static int ppCrunchBuffer_sub(CrunchInfo* info)
 	while (src_curr < info->src_end) { // check_end
 		int progress = (int)(src_curr - info->print_pos);
 
-		if (progress >= 0x200) {
+		if (progress >= 0x200) 
+		{
 			info->print_pos += progress;
 
 			if (info -> progress_fn != NULL) 
 			{
-//				info -> progress_fn((unsigned int)(info->print_pos - info->start), (unsigned int)(info->dst - info->start + (res.ptr - info->tmp) * sizeof(unsigned int)), info->fsize);
+				call_progress_fn( info -> progress_fn, 
+					(unsigned int)(info->print_pos - info->start), 
+					(unsigned int)(info->dst - info->start + (res.ptr - info->tmp) * sizeof(unsigned int)), 
+					info->fsize,
+					NULL	);
 			}
 		}
 

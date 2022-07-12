@@ -13,18 +13,16 @@
 *										  *
 *********************************/
 
+#include <stdio.h>
+
 #include <exec/types.h>
 #include <exec/memory.h>
 #include <libraries/dos.h>
 #include <proto/exec.h>
 #include <proto/dos.h>
 
-#include <stdio.h>
-
 #include <proto/powerpacker.h>
 #include <libraries/ppbase.h>
-
-struct PPBase *PPBase = NULL;
 
 UBYTE *filestart = NULL;
 ULONG filelen;

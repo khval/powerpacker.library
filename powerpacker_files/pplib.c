@@ -20,6 +20,25 @@
 #ifdef USE_PPLOADDATA
 /* also demonstrates how to use the other functions of pplib by yourself */
 
+void dumpHex(char *src,int len)
+{
+	bool ent;
+	int cnt = 0;
+
+	while (len--)
+	{
+		ent = false;
+		printf("%02x ",*(src++));
+		if ((cnt++)==20) 
+		{
+			ent = true;
+			cnt =0; printf("\n");
+		}
+	}
+	if (!ent) printf("\n");
+}
+
+
 int64 file_len(BPTR fh)
 {
 	ChangeFilePosition(fh, 0, OFFSET_END);
@@ -243,6 +262,11 @@ static int ppDecrunchBuffer_main(const unsigned char *eff,
 
 int ppDecrunchBuffer(const unsigned char *eff, const unsigned char *src, unsigned char *dest, unsigned int src_len, unsigned int dest_len)
 {
+
+//	printf("%s:%d\n",__FUNCTION__,__LINE__);
+//	printf("%08x, %08x, %08x, %d, %d\n",eff,src,dest,src_len,dest_len);
+//	dumpHex(src,src_len);
+
     return ppDecrunchBuffer_main(eff, src, dest, src_len, dest_len, 0);
 }
 

@@ -38,10 +38,12 @@ main_SRCS = main/Obtain.c main/Release.c main/ppLoadData.c \
     main/ppDecrypt.c main/ppGetPassword.c main/ppAllocCrunchInfo.c \
     main/ppFreeCrunchInfo.c main/ppCrunchBuffer.c main/ppCrunchBufferDest.c \
     main/ppWriteDataHeader.c main/ppEnterPassword.c main/ppErrorMessage.c \
+	startup.c \
 	pplib.c \
 	pplib_extra.c \
 	ppc.c \
-	68k_stubs.c
+	68k_stubs.c \
+	req.c
 
 # -------------------------------------------------------------
 # Nothing should need changing below this line

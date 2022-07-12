@@ -35,11 +35,12 @@ struct _Library
 };
 
 struct ExecIFace *IExec UNUSED = NULL;
-struct NewlibIFace * INewlib = NULL;
-struct DOSIFace *IDOS = NULL;
 
-struct Library *NewLibBase = NULL;
-struct Library *DOSBase = NULL;
+extern struct NewlibIFace * INewlib ;
+extern struct DOSIFace *IDOS ;
+
+extern struct Library *NewLibBase ;
+extern struct Library *DOSBase ;
 
 /*
  * The system (and compiler) rely on a symbol named _start which marks
@@ -53,6 +54,9 @@ struct Library *DOSBase = NULL;
  *
  */
 int32 _start(void);
+
+extern BOOL open_libs();
+extern void close_libs();
 
 int32 _start(void)
 {
@@ -95,18 +99,6 @@ STATIC APTR libClose(struct LibraryManagerInterface *Self)
 	return 0;
 }
 
-#define close_lib(b,i)			\
-	if (b) IExec->CloseLibrary(b);	\
-	if (i) IExec->DropInterface( (struct Interface *) i );	\
-	b = NULL; i = NULL;		
-
-void close_libs()
-{
-	struct ExecIFace *IExec = (struct ExecIFace *)(*(struct ExecBase **)4)->MainInterface;
-	close_lib( DOSBase, IDOS);
-	close_lib( NewLibBase, INewlib);
-}
-
 /* Expunge the library */
 STATIC APTR libExpunge(struct LibraryManagerInterface *Self)
 {
@@ -132,34 +124,6 @@ STATIC APTR libExpunge(struct LibraryManagerInterface *Self)
 	return result;
 }
 
-BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct Library **base, struct Interface **interface)
-{
-
-	*interface = NULL;
-	*base = IExec->OpenLibrary( name , ver);
-
-	if (*base)
-	{
-		 *interface = IExec->GetInterface( *base,  iname , iver, TAG_END );
-		if (!*interface) if (IDOS) IDOS -> Printf("Unable to getInterface %s for %s %d!\n",iname,name,ver);
-	}
-	else
-	{
-	   	if (IDOS) IDOS -> Printf("Unable to open the %s %ld!\n",name,ver);
-	}
-
-	return (*interface) ? TRUE : FALSE;
-}
-
-BOOL init()
-{
-	if ( ! open_lib( "dos.library", 53L , "main", 1, &DOSBase, (struct Interface **) &IDOS  ) ) return FALSE;
-	if ( ! open_lib( "newlib.library", 53L , "main", 1, &NewLibBase, (struct Interface **) &INewlib  ) ) return FALSE;
-
-	return TRUE;
-}
-
-
 /* The ROMTAG Init Function */
 STATIC struct Library *libInit(struct Library *LibraryBase, APTR seglist, struct Interface *exec)
 {
@@ -177,7 +141,7 @@ STATIC struct Library *libInit(struct Library *LibraryBase, APTR seglist, struct
 
 	libBase->segList = (BPTR)seglist;
 
-	if (init() == FALSE)
+	if (open_libs() == FALSE)
 	{
 		close_libs();
 		return NULL;

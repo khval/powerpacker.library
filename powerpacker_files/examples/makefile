@@ -1,13 +1,19 @@
 
 CFLAGS = -D__USE_INLINE__
 
-files = example.o \
-	init.o
+objs = init.o
 
+tests = example.elf password.elf
+	
 
-all: $(files)
-	gcc  $(files) -o example.elf
+all: $(objs)  $(tests)
 
+%.o : %.c
+	gcc $(CFLAGS) $(CXXFLAGS) -c  $< -o $@
+
+%.elf : %.c
+	gcc $(CFLAGS) $(CXXFLAGS) $(objs)  $< -o $@
 
 clean:
 	delete #?(.o|.elf)
+
