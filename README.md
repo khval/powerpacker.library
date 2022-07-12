@@ -1,10 +1,15 @@
 # powerpacker.library (Project resurrection)
 
-```
-POWER-PACKER 36.10 (28.9.93) Data Cruncher.
-  Written by Nico François (POWER PEAK)
-  Decompiled by Dr. MefistO in 2020
-  Version: v1.0
+Based on the following work:
+  PowerPack 1.0 compression routine based on PowerPacker.library 36.10 (28.9.93) written by Nico François (POWER PEAK) decompiled by Dr. MefistO in 2020
+  pplib 1.2: a simple PowerPacker decompression and decryption library (placed in the Public Domain on 25-Nov-2010 by Stuart Caie).
+  ppcrack 1.0a 
+
+Powerpacker.library was popular compression library used on images, Amiga music modules and readme and other documents as well executable files, back in the late 80’s and early 90’s people used to put things on floppy disks, with only space for 880k of data, from time to time come across some old files, in particular on Amiga cover CD, and amiga magazine disks. Its popularity declined as storage space increased and as well alternative compression routines become popular.
+
+This is a re-creation of powerpacker.library is written by Kjetil Hvalstrand in C code, the code I contributed is mostly the code defines a AmigaOS4.1 library and how it works, the compression/decompression routines is based on different sources, that was released under public domain license, and changed to work as part of the library. 
+
+The aim of this project is to create native version of this Amiga library, in order to route-out any problems, and to allow native AmigaOS4.1/PowerPC programs to be built using the library, as well as give an extra speed boost, to any programs using the library.
 
 # History
 
