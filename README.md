@@ -17,6 +17,10 @@ RELEASE 1.8 PPC (Library Version 38.01)
 
     (Skipping 1.7 as there exists 68k version with that number.)
 
+    12.07.2022 Compression and decompression are working. all bits that need to be there should be.
+    upgraded from pplib 1.0 to pplib 1.2 found in ppcrack.
+    added support for reaction password requestor.
+
     03.07.2022: Changed done by LiveForit (Kjetil Hvalstrand) 
     Generated all AmigaOS4 header files for the library.
     Started the work of converting it back into a library.
