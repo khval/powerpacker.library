@@ -26,7 +26,7 @@
 #include <interfaces/powerpacker.h>
 
 /* Inline macros for Interface "main" */
-#define ppLoadData(filename, col, memtype, bufferptr, lenptr, funcptr) IPowerPacker->ppLoadData((filename), (col), (memtype), (bufferptr), (lenptr), (funcptr))
+#define ppLoadData__legacy__(filename, col, memtype, bufferptr, lenptr, funcptr) IPowerPacker->ppLoadData__legacy__((filename), (col), (memtype), (bufferptr), (lenptr), (funcptr))
 #define ppDecrunchBuffer(endcrun, decrbuff, effptr, col) IPowerPacker->ppDecrunchBuffer((endcrun), (decrbuff), (effptr), (col))
 #define ppCalcChecksum(string) IPowerPacker->ppCalcChecksum((string))
 #define ppCalcPasskey(string) IPowerPacker->ppCalcPasskey((string))
@@ -39,5 +39,6 @@
 #define ppEnterPassword(screen, buffer) IPowerPacker->ppEnterPassword((screen), (buffer))
 #define ppErrorMessage(error) IPowerPacker->ppErrorMessage((error))
 #define ppCrunchBufferDest(crunchinfo, buffer, dest, len) IPowerPacker->ppCrunchBufferDest((crunchinfo), (buffer), (dest), (len))
+#define ppLoadData2(filename, output_buffer, alloc_fn, password_fn) IPowerPacker->ppLoadData2((filename), (output_buffer), (alloc_fn), (password_fn))
 
 #endif /* INLINE4_POWERPACKER_H */

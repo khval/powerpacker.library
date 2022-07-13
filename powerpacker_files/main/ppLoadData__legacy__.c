@@ -1,5 +1,5 @@
 /* :ts=4
- *  $VER: ppLoadData.c $Revision$ (03-Jul-2022)
+ *  $VER: ppLoadData__legacy__.c $Revision$ (13-Jul-2022)
  *
  *  This file is part of powerpacker.
  *
@@ -22,16 +22,15 @@
 #include <proto/powerpacker.h>
 #include <stdarg.h>
 
-#define USE_PPLOADDATA
-#include "../pplib.h"
+#include "../valid_functions.h"
 
-/****** powerpacker/main/ppLoadData ******************************************
+/****** powerpacker/main/ppLoadData__legacy__ ******************************************
 *
 *   NAME
-*      ppLoadData -- Description
+*      ppLoadData__legacy__ -- Description
 *
 *   SYNOPSIS
-*      ULONG ppLoadData(char * filename, ULONG col, ULONG memtype, 
+*      ULONG ppLoadData__legacy__(char * filename, ULONG col, ULONG memtype, 
 *          UBYTE ** bufferptr, ULONG * lenptr, BOOL (*funcptr)());
 *
 *   FUNCTION
@@ -59,7 +58,7 @@
 *
 */
 
-ULONG _powerpacker_ppLoadData(struct PowerPackerIFace *Self,
+ULONG _powerpacker_ppLoadData__legacy__(struct PowerPackerIFace *Self,
        char * filename,
        ULONG col,
        ULONG memtype,
@@ -67,6 +66,6 @@ ULONG _powerpacker_ppLoadData(struct PowerPackerIFace *Self,
        ULONG * lenptr,
        BOOL (*funcptr)())
 {
-  return ppLoadData(filename, col, memtype, bufferptr, lenptr, funcptr);
+  return ppLoadData__legacy__(filename, col, memtype, bufferptr, lenptr, funcptr);
 }
 

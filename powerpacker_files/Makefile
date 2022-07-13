@@ -33,7 +33,7 @@ LIBS =
 VERSION = 53
 
 # "main" Interface Source Files
-main_SRCS = main/Obtain.c main/Release.c main/ppLoadData.c \
+main_SRCS = main/Obtain.c main/Release.c main/ppLoadData__legacy__.c main/ppLoadData2.c \
     main/ppDecrunchBuffer.c main/ppCalcChecksum.c main/ppCalcPasskey.c \
     main/ppDecrypt.c main/ppGetPassword.c main/ppAllocCrunchInfo.c \
     main/ppFreeCrunchInfo.c main/ppCrunchBuffer.c main/ppCrunchBufferDest.c \

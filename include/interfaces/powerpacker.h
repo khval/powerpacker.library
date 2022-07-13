@@ -35,7 +35,7 @@ struct PowerPackerIFace
 	ULONG APICALL (*Release)(struct PowerPackerIFace *Self);
 	APTR Expunge_UNIMPLEMENTED;
 	APTR Clone_UNIMPLEMENTED;
-	ULONG APICALL (*ppLoadData)(struct PowerPackerIFace *Self, char * filename, ULONG col, ULONG memtype, UBYTE ** bufferptr, ULONG * lenptr, BOOL (*funcptr)());
+	ULONG APICALL (*ppLoadData__legacy__)(struct PowerPackerIFace *Self, char * filename, ULONG col, ULONG memtype, UBYTE ** bufferptr, ULONG * lenptr, BOOL (*funcptr)());
 	void APICALL (*ppDecrunchBuffer)(struct PowerPackerIFace *Self, UBYTE * endcrun, UBYTE * decrbuff, ULONG * effptr, ULONG col);
 	ULONG APICALL (*ppCalcChecksum)(struct PowerPackerIFace *Self, char * string);
 	ULONG APICALL (*ppCalcPasskey)(struct PowerPackerIFace *Self, char * string);
@@ -46,8 +46,9 @@ struct PowerPackerIFace
 	ULONG APICALL (*ppCrunchBuffer)(struct PowerPackerIFace *Self, APTR crunchinfo, UBYTE * buffer, ULONG length);
 	BOOL APICALL (*ppWriteDataHeader)(struct PowerPackerIFace *Self, BPTR lock, ULONG eff, BOOL crypt, ULONG checksum);
 	BOOL APICALL (*ppEnterPassword)(struct PowerPackerIFace *Self, struct Screen * screen, UBYTE * buffer);
-	char * APICALL (*ppErrorMessage)(struct PowerPackerIFace *Self, ULONG error);
+	const char * APICALL (*ppErrorMessage)(struct PowerPackerIFace *Self, LONG error);
 	ULONG APICALL (*ppCrunchBufferDest)(struct PowerPackerIFace *Self, UBYTE * crunchinfo, UBYTE * buffer, UBYTE * dest, ULONG len);
+	ULONG APICALL (*ppLoadData2)(struct PowerPackerIFace *Self, char * filename, UBYTE ** output_buffer, APTR (*alloc_fn)(ULONG), BOOL (*password_fn)(UBYTE *, ULONG));
 };
 
 #ifdef __cplusplus

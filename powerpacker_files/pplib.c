@@ -20,25 +20,6 @@
 #ifdef USE_PPLOADDATA
 /* also demonstrates how to use the other functions of pplib by yourself */
 
-void dumpHex(char *src,int len)
-{
-	bool ent;
-	int cnt = 0;
-
-	while (len--)
-	{
-		ent = false;
-		printf("%02x ",*(src++));
-		if ((cnt++)==20) 
-		{
-			ent = true;
-			cnt =0; printf("\n");
-		}
-	}
-	if (!ent) printf("\n");
-}
-
-
 int64 file_len(BPTR fh)
 {
 	ChangeFilePosition(fh, 0, OFFSET_END);
@@ -73,13 +54,20 @@ BOOL get_password(BOOL (*password_func)(UBYTE *, ULONG), char *password, ULONG c
 	return FALSE;
 }
 
-ULONG ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufptr, ULONG * buflenptr, BOOL (*password_func)(UBYTE *, ULONG)) 
+ULONG __ppLoadData(
+		char * filename,  
+		ULONG memtype, 
+		UBYTE ** bufptr, 
+		ULONG * buflenptr, 
+		APTR (*alloc_fn) (ULONG),
+		void (*free_fn) (APTR ptr),
+		BOOL (*password_func)(UBYTE *, ULONG)) 
 {
 	unsigned char *src = NULL, *dest;
 	unsigned int srclen, destlen;
 	int err = PPERR_OK;
-	int efficiency_off;
-	int src_off;
+	int efficiency_off = 0;
+	int src_off = 0;
 
 	BPTR fh;
 	*bufptr = NULL;
@@ -127,7 +115,9 @@ ULONG ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufptr, U
 				src_off = 12;
 				break; 
 
-		case 0x50583230: efficiency_off = 6;        /* PX20 */
+		case 0x50583230:  /* PX20 */
+				efficiency_off = 6;
+				src_off = 10;
 				{
 					char password[16];
 					ULONG checksum = ((src[4]<<8)|src[5]);
@@ -156,7 +146,16 @@ ULONG ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufptr, U
 
 	destlen = (src[srclen-4] << 16) | (src[srclen-3] << 8) | src[srclen-2];
 
-	if ((dest = (unsigned char*) AllocMem(destlen, memtype)))
+	if (alloc_fn) // use new function..
+	{
+		dest = (unsigned char*) alloc_fn(destlen);
+	}
+	else	// use legacy function... no custom alloc,
+	{
+		dest =  (unsigned char*) AllocMem( destlen, memtype);
+	}
+
+	if (dest)
 	{
 		if (!ppDecrunchBuffer(&src[efficiency_off], &src[src_off], dest, srclen-src_off-4, destlen))
 			err = PPERR_DECRUNCH;
@@ -168,7 +167,13 @@ ULONG ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufptr, U
 	{
 		printf("err: %d\n", err);
 
-		if (dest) FreeMem(dest,destlen);
+		if (dest)
+		{
+			if (free_fn)
+				free_fn(dest);
+			else
+				FreeMem(dest,destlen);
+		}
 		*bufptr = NULL;
 		*buflenptr = 0;
 	}
@@ -180,6 +185,20 @@ ULONG ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufptr, U
 	return err;
 }
 #endif
+
+ULONG ppLoadData2(char * filename, UBYTE ** bufferptr, ULONG * buflenptr, APTR (*alloc_func) (ULONG) , void (*free_func) (ULONG), BOOL (*password_func)(UBYTE *, ULONG))
+{
+	if (alloc_func == NULL) return 0; 
+	if (free_func == NULL) return 0; 
+
+	return __ppLoadData( filename,  0, bufferptr, buflenptr, alloc_func, free_func, password_func);
+}
+
+
+ULONG ppLoadData__legacy__(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufptr, ULONG * buflenptr, BOOL (*password_func)(UBYTE *, ULONG)) 
+{
+	return __ppLoadData( filename,  memtype, bufptr, buflenptr, NULL, NULL, password_func);
+}
 
 #define PP_READ_BITS(nbits, var) do {                            \
     bit_cnt = (nbits); (var) = 0;				 \
@@ -200,9 +219,7 @@ ULONG ppLoadData(char * filename,  ULONG col,  ULONG memtype, UBYTE ** bufptr, U
 	*--out = (byte); written++;				 \
 } while (0)
 
-static int ppDecrunchBuffer_main(const unsigned char *eff,
-				 const unsigned char *src, unsigned char *dest,
-				 unsigned int src_len, unsigned int dest_len,
+static int ppDecrunchBuffer_main(const unsigned char *eff, const unsigned char *src, unsigned char *dest, unsigned int src_len, unsigned int dest_len,
 				 const unsigned int litbit)
 {
     const unsigned char *buf = &src[src_len];
@@ -259,6 +276,7 @@ static int ppDecrunchBuffer_main(const unsigned char *eff,
     /* all output bytes written without error */
     return 1;
 }
+
 
 int ppDecrunchBuffer(const unsigned char *eff, const unsigned char *src, unsigned char *dest, unsigned int src_len, unsigned int dest_len)
 {

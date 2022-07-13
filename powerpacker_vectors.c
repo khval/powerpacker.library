@@ -13,7 +13,7 @@ STATIC CONST APTR main_v1_vectors[] =
     _powerpacker_Release,
     _powerpacker_UNIMPLEMENTED, /* Expunge */
     _powerpacker_UNIMPLEMENTED, /* Clone */
-    _powerpacker_ppLoadData,
+    _powerpacker_ppLoadData__legacy__,
     _powerpacker_ppDecrunchBuffer,
     _powerpacker_ppCalcChecksum,
     _powerpacker_ppCalcPasskey,
@@ -26,5 +26,6 @@ STATIC CONST APTR main_v1_vectors[] =
     _powerpacker_ppEnterPassword,
     _powerpacker_ppErrorMessage,
     _powerpacker_ppCrunchBufferDest,
+    _powerpacker_ppLoadData2,
     (APTR)-1
 };

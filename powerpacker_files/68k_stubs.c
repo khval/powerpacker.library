@@ -120,7 +120,7 @@ STATIC ULONG stub_Reserved_ppc(ULONG *regarray)
 
 STATIC ULONG stub_ppLoadData_ppc(ULONG *regarray)
 {
-	regarray[REG68K_D0/4] = ppLoadData( 
+	regarray[REG68K_D0/4] = ppLoadData__legacy__( 
 		( char *) regarray[REG68K_A0/4],
 		(ULONG) regarray[REG68K_D0/4],
 		(ULONG) regarray[REG68K_D1/4],

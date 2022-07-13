@@ -8,7 +8,7 @@
 		<method name="Release" result="ULONG"/>
 		<method name="Expunge" result="void" status="unimplemented"/>
 		<method name="Clone" result="struct Interface *" status="unimplemented"/>
-		<method name="ppLoadData" result="ULONG">
+		<method name="ppLoadData__legacy__" result="ULONG">
 			<arg name="filename" type="char *"/>
 			<arg name="col" type="ULONG"/>
 			<arg name="memtype" type="ULONG"/>
@@ -71,6 +71,14 @@
 			<arg name="buffer" type="UBYTE *"/>
 			<arg name="dest" type="UBYTE *"/> 
 			<arg name="len" type="ULONG"/> 
+		</method>
+		<method name="ppLoadData2" result="ULONG">
+			<arg name="filename" type="char *"/>
+ 			<arg name="output_buffer" type="UBYTE **"/> 
+			<arg name="output_buffer_len" type="ULONG *"/>
+			<arg name="alloc_fn" type="BOOL (*)(ULONG)"/>
+			<arg name="free_fn" type="void (*)(APTR)"/>
+			<arg name="progress_fn" type="BOOL (*)()"/>
 		</method>
 	</interface>
 </library>

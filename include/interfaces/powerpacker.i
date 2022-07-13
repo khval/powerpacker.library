@@ -14,7 +14,7 @@ STRUCTURE PowerPackerIFace, InterfaceData_SIZE
 	    FPTR IPowerPacker_Release
 	    FPTR PowerPackerIFace_Expunge_UNIMPLEMENTED
 	    FPTR PowerPackerIFace_Clone_UNIMPLEMENTED
-	    FPTR IPowerPacker_ppLoadData
+	    FPTR IPowerPacker_ppLoadData__legacy__
 	    FPTR IPowerPacker_ppDecrunchBuffer
 	    FPTR IPowerPacker_ppCalcChecksum
 	    FPTR IPowerPacker_ppCalcPasskey
@@ -27,6 +27,7 @@ STRUCTURE PowerPackerIFace, InterfaceData_SIZE
 	    FPTR IPowerPacker_ppEnterPassword
 	    FPTR IPowerPacker_ppErrorMessage
 	    FPTR IPowerPacker_ppCrunchBufferDest
+	    FPTR IPowerPacker_ppLoadData2
 	LABEL PowerPackerIFace_SIZE
 
 #endif

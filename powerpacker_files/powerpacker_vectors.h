@@ -19,7 +19,7 @@ struct PowerPackerIFace;
 
 extern ULONG                VARARGS68K _powerpacker_Obtain(struct PowerPackerIFace *);
 extern ULONG                VARARGS68K _powerpacker_Release(struct PowerPackerIFace *);
-extern ULONG                VARARGS68K _powerpacker_ppLoadData(struct PowerPackerIFace *, char * filename, ULONG col, ULONG memtype, UBYTE ** bufferptr, ULONG * lenptr, BOOL (*funcptr)());
+extern ULONG                VARARGS68K _powerpacker_ppLoadData__legacy__(struct PowerPackerIFace *, char * filename, ULONG col, ULONG memtype, UBYTE ** bufferptr, ULONG * lenptr, BOOL (*funcptr)());
 extern void                 VARARGS68K _powerpacker_ppDecrunchBuffer(struct PowerPackerIFace *, UBYTE * endcrun, UBYTE * decrbuff, ULONG * effptr, ULONG col);
 extern ULONG                VARARGS68K _powerpacker_ppCalcChecksum(struct PowerPackerIFace *, char * string);
 extern ULONG                VARARGS68K _powerpacker_ppCalcPasskey(struct PowerPackerIFace *, char * string);
@@ -30,5 +30,6 @@ extern void                 VARARGS68K _powerpacker_ppFreeCrunchInfo(struct Powe
 extern ULONG                VARARGS68K _powerpacker_ppCrunchBuffer(struct PowerPackerIFace *, APTR crunchinfo, UBYTE * buffer, ULONG length);
 extern BOOL                 VARARGS68K _powerpacker_ppWriteDataHeader(struct PowerPackerIFace *, BPTR lock, ULONG eff, BOOL crypt, ULONG checksum);
 extern BOOL                 VARARGS68K _powerpacker_ppEnterPassword(struct PowerPackerIFace *, struct Screen * screen, UBYTE * buffer);
-extern char *               VARARGS68K _powerpacker_ppErrorMessage(struct PowerPackerIFace *, ULONG error);
+extern const char *         VARARGS68K _powerpacker_ppErrorMessage(struct PowerPackerIFace *, LONG error);
 extern ULONG                VARARGS68K _powerpacker_ppCrunchBufferDest(struct PowerPackerIFace *, UBYTE * crunchinfo, UBYTE * buffer, UBYTE * dest, ULONG len);
+extern ULONG                VARARGS68K _powerpacker_ppLoadData2(struct PowerPackerIFace *, char * filename, UBYTE ** output_buffer, APTR (*alloc_fn)(ULONG), BOOL (*password_fn)(UBYTE *, ULONG));
