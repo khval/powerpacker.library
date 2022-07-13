@@ -1,0 +1,46 @@
+.key target_lha
+.bra {
+.ket }
+
+setenv lhafile=ram:powerpacker_library.lha
+
+if exists ram:powerpacker_library
+	delete ram:powerpacker_library all
+endif
+
+if exists ram:powerpacker_library.lha
+	delete ram:powerpacker_library.lha
+endif
+
+makedir ram:powerpacker_library
+makedir ram:powerpacker_library/c
+makedir ram:powerpacker_library/libs
+makedir ram:powerpacker_library/development_ppc
+makedir ram:powerpacker_library/development_ppc/Documentation/
+makedir ram:powerpacker_library/development_ppc/Documentation/AutoDocs/
+makedir ram:powerpacker_library/development_ppc/Include
+makedir ram:powerpacker_library/development_ppc/Include/include_h/
+
+copy tool/powerpack ram:powerpacker_library/c
+
+copy /package ram:powerpacker_library all
+;copy /readme.txt ram:powerpacker_library/readme.txt
+copy /documentation/#? ram:powerpacker_library/development_ppc/Documentation all
+copy /include/#? ram:powerpacker_library/development_ppc/Include/include_h/ all
+
+IF EXISTS powerpacker.library
+	copy powerpacker.library ram:powerpacker_library/libs
+else
+	echo powerpacker.library not found
+endif
+
+;cd /locale/
+;list  catalogs/ LFORMAT "makedir ram:powerpacker_library/locale/%p%n" > t:copy_catalogs
+;list  all LFORMAT "copy /locale/%p%n ram:powerpacker_library/locale/%p " | grep powerpacker.catalog >> t:copy_catalogs
+;cd /powerpacker_files/
+;protect t:copy_catalogs +s
+;t:copy_catalogs
+
+lha -er a $lhafile ram:powerpacker_library >NIL:
+; lha L $lhafile
+;delete ram:powerpacker_library all 

@@ -1,0 +1,181 @@
+;*
+;* powerpacker.library for AmigaONE/Sam4x0/AmigaOS 4.x
+;*
+;* Recreated by Kjetil Hvalstrand based on Copyrighted work from Nico Francois in 1993
+;* and other sources read LICENCE.md for more information
+;*
+;*	http://github.com/khval/powerpacker.library
+;*
+;*
+
+;********* MESSAGES ***************************************
+
+(set MStartup
+  (cat  "\nWelcome to the\n\n"
+        "powerpacker installation\n\n\n"
+        "This project is open source and distributed as Public Domain.\n\n"
+        "https://github.com/khval/powerpacker.library"
+  )
+)
+
+(set POptions "What do you want to install?")
+(set HOptions
+  (cat  "Please choose the parts of the packet that should be installed.\n\n"
+        "Libraries: All powerpacker libraries (this is the main part).\n\n"
+        "Tools: Small but useful tools.\n\n"
+        "Catalogs: Language catalogs (English is the built-in language)\n\n"
+        "If you are not sure what to install, just use the default. "
+        "You can install the other parts any time later."
+        "SDK for AmigaOS4: Header / include files you need to make your own tools and apps"
+  )
+)
+(set SLibs    "Libraries")
+(set STools   "Tools")
+(set SSDK "SDK for AmigaOS4")
+
+(set PLibDestDir "Where do you want to install the libraries?")
+(set HLibDestDir
+  (cat  "Choose the drawer for the system libraries. "
+        "Usually, this is \"LIBS:\"."
+  )
+)
+
+(set PToolDestDir "Where do you want to install the tools?")
+(set HToolDestDir
+  (cat  "Choose a drawer that is within the shell path. "
+        "Usually, this is \"C:\"."
+  )
+)
+
+(set PCopyLib     "Copying the powerpacker.library")
+(set PCopyTool    "Copying the tools")
+
+(set HCopyTool
+  (cat  "What tools should be installed?\n\n"
+        "powerpack: a small tool to compress and decompress powerpacked files."
+  )
+)
+
+;********* FILES ******************************************
+
+(set FIfyLibName "powerpacker.library")
+(set FIfyLib     "libs/powerpacker.library")
+
+(set FTool       "c/")
+(set FSDK        "development_ppc/")
+(set FPowerPack "PowerPack")
+
+;********* INSTALLER SCRIPT *******************************
+
+(set @default-dest "")          ; currently no specific dir
+
+;------ Greetings to the user -----------------------------
+(message MStartup)
+
+;------ What should be installed --------------------------
+(set InstOpts                   ; ask what to install
+  (askoptions
+    (prompt  POptions)
+    (help    HOptions)
+    (choices SLibs STools SSDK)
+    (default -1)
+  )
+)
+
+
+(set FCopyIfyLib FIfyLib)
+
+;------ Ask for destinations ------------------------------
+(if (IN InstOpts 0)             ; Libs
+  (
+    (set LibDestDir "LIBS:")    ; Destination for the library
+    (if (= @user-level 2)
+      (
+        (set LibDestDir
+          (askdir
+            (prompt PLibDestDir)
+            (help   HLibDestDir)
+            (default LibDestDir)
+          )
+        )
+        (set FCopyIfyLib FIfyLib)
+      )
+    )
+  )
+)
+
+(if (IN InstOpts 1)             ; Tools
+  (
+    (set ToolDestDir "C:")
+    (if (= @user-level 2)
+      (set ToolDestDir
+        (askdir
+          (prompt PToolDestDir)
+          (help   HToolDestDir)
+          (default ToolDestDir)
+        )
+      )
+    )
+  )
+)
+
+(if (IN InstOpts 3)             ; SDK
+  (
+    (set SDKDestDir "RAM:")
+    (if (= @user-level 2)
+      (set SDKDestDir
+        (askdir
+          (prompt PSDKDestDir)
+          (help   HSDKDestDir)
+          (default SDKDestDir)
+        )
+      )
+    )
+  )
+)
+
+
+
+;------ Copy all files ------------------------------------
+(if (IN InstOpts 0)             ; Libraries
+  (
+    (copylib
+      (prompt  PCopyLib)
+      (help    @copylib-help)
+      (confirm)
+      (source  FCopyIfyLib)
+      (dest    LibDestDir)
+      (newname FIfyLibName)
+    )
+  )
+)
+
+(if (IN InstOpts 1)             ; Tools
+  (
+    (copyfiles
+      (prompt PCopyTool)
+      (help   HCopyTool)
+      (confirm)
+      (choices FPowerPack)
+      (source FTool)
+      (dest   ToolDestDir)
+    )
+  )
+)
+
+(if (IN InstOpts 3)             ; SDK
+  (
+    (copyfiles
+      (prompt PCopySDK)
+      (help   @copyfiles-help)
+      (confirm)
+      (source FSDK)
+      (dest   SDKDestDir)
+      (all)
+      (infos)
+      (noposition)
+    )
+  )
+)
+
+(exit)

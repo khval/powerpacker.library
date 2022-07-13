@@ -1,0 +1,101 @@
+TABLE OF CONTENTS
+
+powerpacker.library/AAA-Compatibility-Notice
+powerpacker.library/ppLoadData2
+
+powerpacker.library/AAA-Compatibility-Notice	 dos.library/AAA-Compatibility-Notice
+
+  DESCRIPTION
+
+	This document only contain, new or changes, due following text.
+
+	From "DISTRIBUTION" text file included with PowerPacker release 1.6
+
+	"All of these files (except example.c, example.asm and Example.mod) must
+	remain unmodified and are copyrighted by the author.  None of these files may
+	be distributed on its own, the entire package must be distributed as one
+	whole.  Example.c, example.asm and Example.mod are full public domain and can
+	be used in any way you like :-)"
+	
+	As for this powerpacker.library this is a recreation based on Public Domain,
+	its there for not 100% garantied its, 100% compatible, I have tried.
+
+	Please report bugs to:
+	https://github.com/khval/powerpacker.library	
+
+powerpacker.library/ppLoadData2				 powerpacker.library/ppLoadData
+
+  NAME  ppLoadData2()
+
+	error = ppLoadData2 (filename, output, output_len, alloc_func, free_func, password_func);
+
+	ULONG ppLoadData2 (char *, UBYTE **, ULONG *, APTR (*) (ULONG), void (*) (APTR) , BOOL (*)(UBYTE *,ULONG));
+
+  DESCRIPTION
+
+	To keep it short, ppLoadData() is obsolete, because it uses AllocMem() internally,
+	AllocMem() & FreeMem() are marked obsolete on AmigaOS4.1 and should not be used.
+	ppLoadData2() is a replacement for it, old function used have an argument for color flashing, on modern AmigaONE, 
+	we no long have a Amiga chipset, so writing to this registers can be dangers.
+
+	ppLoadData2() load a file into memory and decompresses into the output.
+	program uses callback hook functions to allocate memory, free memory, and to update progress.
+
+	you must create your own functions, and give ppLoadData2() this as arguments.
+	if the required function pointers are not set the ppLoadData2() routine will not start.
+
+	void my_pp_alloc(ULONG size)
+	{
+		// use any memory allocation routine you like,
+		return malloc(address);
+	}
+
+	void my_pp_free( APTR address )
+	{
+		// use any memory free routine thatâs matches allocation routine.
+		Free(address);
+	}
+
+	BOOL my_pass_func(UBYTE *password,ULONG checksum)
+	{
+		// then password should be stored into password address, max 16 chars and +1 for null termination,  on success.
+		// returns true or false, if the password matches the checksum, use ppCalcChecksum() to generate checksum.
+	}
+
+	UBYTE *output;
+	ULONG output_len;
+
+	error = ppLoadData2( "filename",&output,&output_len,my_pp_alloc,my_pp_free,my_pass_func);
+	If (!error)
+	{
+		//-- file is compressed.
+		if (output) my_pp_free(output);
+	}
+
+  INPUTS
+	filename - the filename to load, with or without path.
+	alloc_func - function to alloc the memory for the output data.
+	free_func - function to be called, if function fails to load or unpack file.
+	password_func - function to be called, when user is asked for password.
+			   NULL for the the default password prompt and -1 for no password prompt.
+	*output  - address of the variable to hold unpacked data.
+	*output_len - address of the variable to hold length of unpacked data.
+
+  RESULT
+	error - 0 i
+		PP_OPENERR   - unable to open file.
+		PP_READERR   - read error.
+		PP_NOMEMORY  - not enough memory to load file.
+		PP_CRYPTED   - file is encrypted (only when 'func' == -1).
+		PP_PASSERR   - incorrect password
+		PP_EMPTYFILE - file is empty
+		PP_UNKNOWNPP - crunched by unknown version of PowerPacker.
+
+  NOTE
+  
+  BUGS
+	none known
+
+  SEE ALSO
+	exec.library/AllocMem(), exec.library/FreeMem(), ppCalcChecksum(),
+	ppErrorMessage(), ppGetPassword()
