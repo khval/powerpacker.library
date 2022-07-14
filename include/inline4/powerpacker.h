@@ -39,6 +39,6 @@
 #define ppEnterPassword(screen, buffer) IPowerPacker->ppEnterPassword((screen), (buffer))
 #define ppErrorMessage(error) IPowerPacker->ppErrorMessage((error))
 #define ppCrunchBufferDest(crunchinfo, buffer, dest, len) IPowerPacker->ppCrunchBufferDest((crunchinfo), (buffer), (dest), (len))
-#define ppLoadData2(filename, output_buffer, alloc_fn, password_fn) IPowerPacker->ppLoadData2((filename), (output_buffer), (alloc_fn), (password_fn))
+#define ppLoadData2(filename, output_buffer, output_buffer_len, alloc_fn, free_fn, progress_fn) IPowerPacker->ppLoadData2((filename), (output_buffer), (output_buffer_len), (alloc_fn), (free_fn), (progress_fn))
 
 #endif /* INLINE4_POWERPACKER_H */
