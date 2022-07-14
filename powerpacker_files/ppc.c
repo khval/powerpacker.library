@@ -1,4 +1,11 @@
 
+/*
+* 
+* This file comes from powerpack tool for windows.
+* the file is distibuted as Public domain.
+*
+*/
+
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>

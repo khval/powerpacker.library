@@ -1,4 +1,11 @@
 
+/*
+* 
+* This file comes from powerpack tool for windows.
+* the file is distibuted as Public domain.
+*
+*/
+
 size_t write_word(FILE* f, unsigned short v) {
     return fwrite(&v, 1, sizeof(v), f);
 }

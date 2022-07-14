@@ -1,4 +1,11 @@
 
+/*
+* 
+* This file written by Kjetil Hvalstrand
+* and distributed as MIT Liencene.
+*
+*/
+
 
 #define __USE_INLINE__
 

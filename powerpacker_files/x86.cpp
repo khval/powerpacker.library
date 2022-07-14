@@ -1,5 +1,10 @@
 
-
+/*
+* 
+* This file comes from powerpack tool for windows.
+* the file is distibuted as Public domain.
+*
+*/
 
 size_t write_word(FILE* f, unsigned short v) {
     unsigned char b1 = (v >> 8) & 0xFF;

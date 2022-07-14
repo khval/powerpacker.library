@@ -1,4 +1,13 @@
 
+/*
+* 
+*  This file written by Kjetil Hvalstrand
+*  and distributed as Public Domain
+*  it's based on developer documentation for powerpacker.library release 1.6
+*  Copyright (c) 1991-1994 Nico Francois, 
+*  See. LICENSE.md for more info.
+*
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
