@@ -28,6 +28,10 @@ copy /package ram:powerpacker_library all
 copy /documentation/#? ram:powerpacker_library/development_ppc/Documentation all
 copy /include/#? ram:powerpacker_library/development_ppc/Include/include_h/ all
 
+; you can find this file in pplib16.lha, if you need it..
+delete "RAM Disk:powerpacker_library/development_ppc/Include/include_h/libraries/ppbase.h"
+echo "you can find this file in pplib16.lha on Aminet"  > "RAM Disk:powerpacker_library/development_ppc/Include/include_h/libraries/ppbase.h.txt"
+
 IF EXISTS powerpacker.library
 	copy powerpacker.library ram:powerpacker_library/libs
 else
