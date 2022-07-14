@@ -142,6 +142,16 @@ static void print_help()
 }
 
 
+APTR ppAlloc_fn( ULONG size )
+{
+	return AllocVecTags( size, AVT_Type, MEMF_PRIVATE, TAG_END);
+}
+
+void ppFree_fn( APTR address )
+{
+	FreeVec( address );
+}
+
 int _main(int argc, char* argv[])
 {
 	printf("POWER-PACKER 36.10 (28.9.93) Data Cruncher.\n");
@@ -218,14 +228,12 @@ int _main(int argc, char* argv[])
 	}
 	else
 	{
-//		decrunch_t* info;
+		unsigned char *buf;
+		ULONG buflen;
 
-		unsigned char *bufptr;
-		ULONG buflenptr;
+		result = ppLoadData2(argv[1], &buf, &buflen, ppAlloc_fn, ppFree_fn, NULL );
 
-		result = ppLoadData(argv[1], 0, MEMF_ANY,  &bufptr, &buflenptr, NULL );
-
-		if (bufptr == NULL)
+		if (buf == NULL)
 		{
 			printf("Cannot decrunch '%s'!\n", argv[1]);
 			return 224;
@@ -235,23 +243,19 @@ int _main(int argc, char* argv[])
 		if (dst_h == 0)
 		{
 			printf("Cannot open '%s' for write!\n", argv[2]);
-			free(bufptr);
+			ppFree_fn(buf);
 			return 223;
 		}
 		else
 		{
-
-			if (FWrite(dst_h, bufptr, 1, buflenptr) != buflenptr)
+			if (FWrite(dst_h, buf, 1, buflen) != buflen)
 			{
 				printf("Cannot write to '%s'!\n", argv[2]);
 				result = 223;
 			}
-
-			printf("Successfully decrunched '%s' into '%s'\n", argv[1], argv[2]);
-//			printf("Result: %d -> %d bytes\n", info->src_len, buflenptr);
 		}
 
-		if (bufptr) FreeMem(bufptr,buflenptr);
+		if (buf) ppFree_fn(buf);
 		FClose(dst_h);
 	}
 
