@@ -22,12 +22,21 @@
 #include <proto/dos.h>
 
 #include <proto/powerpacker.h>
-#include <libraries/ppbase.h>
 
 UBYTE *filestart = NULL;
 ULONG filelen;
 
 char *file;
+
+APTR pp_alloc_fn(ULONG size)
+{
+	return malloc(size);
+}
+
+void pp_free_fn(APTR ptr)
+{
+	free(ptr);
+}
 
 int _main(int args, char **arg)
 {
@@ -43,7 +52,7 @@ int _main(int args, char **arg)
 
 	puts ("Loading file...");
 
-	err = ppLoadData (file, DECR_POINTER, 0L, &filestart, &filelen, NULL);
+	err = ppLoadData2 (file, &filestart, &filelen, pp_alloc_fn, pp_free_fn, NULL);
 
 	if (err)
 		printf ("error: %s!\n", ppErrorMessage (err));
@@ -59,7 +68,7 @@ int _main(int args, char **arg)
 
 	/* free all resources */
 
-	if (filestart) FreeMem (filestart, filelen);
+	if (filestart) pp_free_fn (filestart);
 
 	puts ("exiting.");
 	return 0;
