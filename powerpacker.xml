@@ -73,10 +73,10 @@
 			<arg name="len" type="ULONG"/> 
 		</method>
 		<method name="ppLoadData2" result="ULONG">
-			<arg name="filename" type="char *"/>
+			<arg name="filename" type="const char *"/>
  			<arg name="output_buffer" type="UBYTE **"/> 
 			<arg name="output_buffer_len" type="ULONG *"/>
-			<arg name="alloc_fn" type="BOOL (*)(ULONG)"/>
+			<arg name="alloc_fn" type="APTR (*)(ULONG)"/>
 			<arg name="free_fn" type="void (*)(APTR)"/>
 			<arg name="progress_fn" type="BOOL (*)()"/>
 		</method>

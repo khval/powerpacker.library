@@ -48,7 +48,7 @@ struct PowerPackerIFace
 	BOOL APICALL (*ppEnterPassword)(struct PowerPackerIFace *Self, struct Screen * screen, UBYTE * buffer);
 	const char * APICALL (*ppErrorMessage)(struct PowerPackerIFace *Self, LONG error);
 	ULONG APICALL (*ppCrunchBufferDest)(struct PowerPackerIFace *Self, UBYTE * crunchinfo, UBYTE * buffer, UBYTE * dest, ULONG len);
-	ULONG APICALL (*ppLoadData2)(struct PowerPackerIFace *Self, char * filename, UBYTE ** output_buffer, ULONG * output_buffer_len, BOOL (*alloc_fn)(ULONG), void (*free_fn)(APTR), BOOL (*progress_fn)());
+	ULONG APICALL (*ppLoadData2)(struct PowerPackerIFace *Self, const char * filename, UBYTE ** output_buffer, ULONG * output_buffer_len, APTR (*alloc_fn)(ULONG), void (*free_fn)(APTR), BOOL (*progress_fn)());
 };
 
 #ifdef __cplusplus

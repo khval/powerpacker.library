@@ -32,4 +32,4 @@ extern BOOL                 VARARGS68K _powerpacker_ppWriteDataHeader(struct Pow
 extern BOOL                 VARARGS68K _powerpacker_ppEnterPassword(struct PowerPackerIFace *, struct Screen * screen, UBYTE * buffer);
 extern const char *         VARARGS68K _powerpacker_ppErrorMessage(struct PowerPackerIFace *, LONG error);
 extern ULONG                VARARGS68K _powerpacker_ppCrunchBufferDest(struct PowerPackerIFace *, UBYTE * crunchinfo, UBYTE * buffer, UBYTE * dest, ULONG len);
-extern ULONG                VARARGS68K _powerpacker_ppLoadData2(struct PowerPackerIFace *, char * filename, UBYTE ** output_buffer, ULONG * output_buffer_len, BOOL (*alloc_fn)(ULONG), void (*free_fn)(APTR), BOOL (*progress_fn)());
+extern ULONG                VARARGS68K _powerpacker_ppLoadData2(struct PowerPackerIFace *, const char * filename, UBYTE ** output_buffer, ULONG * output_buffer_len, APTR (*alloc_fn)(ULONG), void (*free_fn)(APTR), BOOL (*progress_fn)());
