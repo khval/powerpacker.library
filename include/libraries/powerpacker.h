@@ -10,6 +10,17 @@
    #pragma amiga-align
 #endif
 
+#define PPERR_OK           (0) /* no error                  */
+#define PPERR_OPEN         (-1L) /* error opening file        */
+#define PPERR_READ         (-2L) /* error reading from file   */
+#define PPERR_NOMEMORY     (-3) /* out of memory             */
+#define PPERR_PASSWORD     (-5L) /* bad or missing password   */
+#define PPERR_UNKNOWN     (-6L) /* error unknown    */
+#define PPERR_SEEK         (PPERR_UNKNOWN) /* error seeking in file     */
+#define PPERR_DATAFORMAT   (PPERR_UNKNOWN) /* error in data format      */
+#define PPERR_DECRUNCH     (PPERR_UNKNOWN) /* error decrunching data    */
+#define PPERR_ARGS         (PPERR_UNKNOWN) /* bad arguments to function */
+
 typedef struct {
 	unsigned int tag;
 	unsigned char* src;

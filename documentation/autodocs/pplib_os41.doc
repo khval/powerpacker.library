@@ -82,14 +82,17 @@ powerpacker.library/ppLoadData2				 powerpacker.library/ppLoadData
 	*output_len - address of the variable to hold length of unpacked data.
 
   RESULT
-	error - 0 i
-		PP_OPENERR   - unable to open file.
-		PP_READERR   - read error.
-		PP_NOMEMORY  - not enough memory to load file.
-		PP_CRYPTED   - file is encrypted (only when 'func' == -1).
-		PP_PASSERR   - incorrect password
-		PP_EMPTYFILE - file is empty
-		PP_UNKNOWNPP - crunched by unknown version of PowerPacker.
+	error - 0 
+
+		PPERR_OK		File opened success
+		PPERR_ARGS		bad arguments to function
+		PPERR_OPEN		error opening file
+		PPERR_READ		error reading from file
+		PPERR_SEEK		error seeking in file
+		PPERR_NOMEMORY     Out of memory
+		PPERR_DATAFORMAT   Error in data format
+		PPERR_PASSWORD      Bad or missing password
+		PPERR_DECRUNCH      error decrunching data
 
   NOTE
   

@@ -11,7 +11,6 @@
 #include <exec/emulation.h>
 
 #include <libraries/powerpacker.h>
-#include <libraries/ppbase.h>
 
 #ifndef PPLIB_H
 #include <pplib.h>
@@ -36,40 +35,49 @@ const char *ppErrorMessage (ULONG errorcode)
 
 	switch (errorcode)
 	{
-		case PP_CRUNCHABORTED:
-			error_str = "PP_CRUNCHABORTED";
+		case PPERR_OK:
+			error_str = "case File opened success";
 			break;
 
-		case PP_OPENERR:
-			error_str = "PP_OPENERR"; 
+		case PPERR_OPEN:
+			error_str = "case error opening file";
 			break;
 
-		case PP_READERR:
-			error_str = "PP_READERR"; 
+		case PPERR_READ:
+			error_str = "case error reading from file";
 			break;
 
-		case PP_NOMEMORY:
-			error_str = "PP_NOMEMORY"; 
+		case PPERR_NOMEMORY:
+			error_str = "Out of memory";
 			break;
 
-		case PP_CRYPTED:
-			error_str = "PP_CRYPTED"; 
+		case PPERR_PASSWORD:
+			error_str = "Bad or missing password";
 			break;
 
-		case PP_PASSERR:
-			error_str = "PP_PASSERR"; 
+		case PPERR_UNKNOWN:
+			error_str = "Unkown error";
 			break;
 
-		case PP_UNKNOWNPP:
-			error_str = "PP_UNKNOWNPP"; 
+/*
+		case PPERR_ARGS:
+			error_str = "case bad arguments to function";
 			break;
 
-		case PP_EMPTYFILE:
-			error_str = "PP_EMPTYFILE"; 
+		case PPERR_SEEK:
+			error_str = "case error seeking in file";
 			break;
+
+		case PPERR_DATAFORMAT:
+			error_str = "Error in data format";
+			break;
+
+		case PPERR_DECRUNCH:
+			error_str = "error decrunching data";
+			break;
+*/
+
 	}
-
-	printf("DB(%s)\n",error_str);
 
 	return error_str;
 }

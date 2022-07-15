@@ -11,7 +11,7 @@
 #include <proto/exec.h>
 #include <exec/emulation.h>
 
-#include <libraries/ppbase.h>
+#include <libraries/powerpacker.h>
 
 #ifndef PPLIB_H
 #include <pplib.h>

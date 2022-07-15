@@ -20,16 +20,6 @@ extern "C" {
 #define PPERR_DATAFORMAT   (6) /* error in data format      */
 #define PPERR_PASSWORD     (7) /* bad or missing password   */
 #define PPERR_DECRUNCH     (8) /* error decrunching data    */
-#else
-#define PPERR_OK           (0) /* no error                  */
-#define PPERR_ARGS         (PP_UNKNOWNPP) /* bad arguments to function */
-#define PPERR_OPEN         (PP_OPENERR) /* error opening file        */
-#define PPERR_READ         (PP_READERR) /* error reading from file   */
-#define PPERR_SEEK         (PP_UNKNOWNPP) /* error seeking in file     */
-#define PPERR_NOMEMORY     (PP_NOMEMORY) /* out of memory             */
-#define PPERR_DATAFORMAT   (PP_UNKNOWNPP) /* error in data format      */
-#define PPERR_PASSWORD     (PP_PASSERR) /* bad or missing password   */
-#define PPERR_DECRUNCH     (PP_UNKNOWNPP) /* error decrunching data    */
 #endif
 
 /**
